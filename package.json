@@ -1,7 +1,15 @@
 {
   "name": "vue-drag-select",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.0.1",
+  "description": "Drag select component for Vue.js",
+  "keywords": [
+    "vue",
+    "drag",
+    "select"
+  ],
+  "homepage": "https://github.com/credred/vue-drag-select#readme",
+  "license": "MIT",
+  "main": "lib/vue-drag-select.umd.min.js",
   "scripts": {
     "build": "vue-cli-service build --target lib --dest lib components/index.ts",
     "lint": "vue-cli-service lint"
