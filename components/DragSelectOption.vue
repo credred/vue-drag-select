@@ -3,7 +3,10 @@
 </template>
 
 <script lang="ts">
-export default class DragSelectOption {}
+import { Vue, Component } from "vue-property-decorator";
+
+@Component
+export default class DragSelectOption extends Vue {}
 </script>
 
 <style lang="scss"></style>
