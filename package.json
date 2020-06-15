@@ -12,7 +12,8 @@
   "main": "lib/vue-drag-select.umd.min.js",
   "scripts": {
     "build": "vue-cli-service build --target lib --dest lib components/index.ts",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "storybook": "start-storybook -p 6006"
   },
   "dependencies": {
     "core-js": "^3.6.5",
@@ -21,6 +22,7 @@
     "vue-property-decorator": "^8.4.2"
   },
   "devDependencies": {
+    "@storybook/vue": "^5.3.19",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
     "@vue/cli-plugin-babel": "~4.4.0",
