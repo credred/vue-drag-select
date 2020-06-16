@@ -15,6 +15,9 @@
       "webpack-env"
     ],
     "paths": {
+      "@util/*": [
+        "components/_util/*"
+      ],
       "@/*": [
         "components/*"
       ]
