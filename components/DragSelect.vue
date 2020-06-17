@@ -82,6 +82,7 @@ export default class DragSelect extends Vue {
     this.startPoint = this._getCurrentPoint(e);
     window.addEventListener("mousemove", this._onMousemove);
     window.addEventListener("mouseup", this._onMouseup);
+    this._scrollableParent.addEventListener("scroll", this._onScrollableParentScroll);
   }
 
   _onMousemove(e: MouseEvent) {
@@ -94,6 +95,10 @@ export default class DragSelect extends Vue {
 
     window.removeEventListener("mousemove", this._onMousemove);
     window.removeEventListener("mouseup", this._onMouseup);
+  }
+
+  _onScrollableParentScroll(e: Event) {
+    this._drag(e);
   }
 
   _drag(e: Event) {
