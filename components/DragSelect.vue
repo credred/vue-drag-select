@@ -1,7 +1,7 @@
 <template>
   <div class="drag-select-wrapper" @mousedown="_onMousedown">
     <slot></slot>
-    <div class="drag-select-area" :style="dragSelectAreaStyles"></div>
+    <div class="drag-select-area" :class="dragAreaClass" :style="dragSelectAreaStyles"></div>
   </div>
 </template>
 
@@ -55,22 +55,17 @@ export default class DragSelect extends Vue {
     return {
       left: el.offsetLeft,
       top: el.offsetTop,
-      width: el.getBoundingClientRect().width,
-      height: el.getBoundingClientRect().height,
+      width: el.clientWidth,
+      height: el.clientHeight,
     };
   }
 
   _getCurrentPoint(e: MouseEvent) {
     const selfRect = this._getSelfRect();
+    const { clientLeft, offsetLeft, clientTop, offsetTop } = this.$el as HTMLElement;
     return {
-      x: Math.max(
-        0,
-        Math.min(e.clientX - (this.$el as HTMLElement).offsetLeft + this._scrollableParent.scrollLeft, selfRect.width)
-      ),
-      y: Math.max(
-        0,
-        Math.min(e.clientY - (this.$el as HTMLElement).offsetTop + this._scrollableParent.scrollTop, selfRect.height)
-      ),
+      x: Math.max(0, Math.min(e.clientX - clientLeft - offsetLeft + this._scrollableParent.scrollLeft, selfRect.width)),
+      y: Math.max(0, Math.min(e.clientY - clientTop - offsetTop + this._scrollableParent.scrollTop, selfRect.height)),
     };
   }
 
