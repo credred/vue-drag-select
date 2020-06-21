@@ -82,6 +82,16 @@ export default class DragSelect extends Vue {
     this.$emit("change", Object.keys(selectedOptionKeys));
   }
 
+  mounted() {
+    this._scrollableParent = findScrollableParent(this.$el as HTMLElement) as HTMLElement;
+  }
+
+  beforeDestroy() {
+    window.removeEventListener("mousemove", this._onMousemove);
+    window.removeEventListener("mouseup", this._onMouseup);
+    this._scrollableParent.removeEventListener("scroll", this._onScrollableParentScroll);
+  }
+
   _getSelfRect() {
     const el = this.$el as HTMLElement;
     return {
@@ -111,16 +121,6 @@ export default class DragSelect extends Vue {
         )
       ),
     };
-  }
-
-  mounted() {
-    this._scrollableParent = findScrollableParent(this.$el as HTMLElement) as HTMLElement;
-  }
-
-  beforeDestroy() {
-    window.removeEventListener("mousemove", this._onMousemove);
-    window.removeEventListener("mouseup", this._onMouseup);
-    this._scrollableParent.removeEventListener("scroll", this._onScrollableParentScroll);
   }
 
   _onMousedown(e: MouseEvent) {
