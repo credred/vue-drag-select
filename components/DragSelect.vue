@@ -64,8 +64,20 @@ export default class DragSelect extends Vue {
     const selfRect = this._getSelfRect();
     const { clientLeft, offsetLeft, clientTop, offsetTop } = this.$el as HTMLElement;
     return {
-      x: Math.max(0, Math.min(e.clientX - clientLeft - offsetLeft + this._scrollableParent.scrollLeft, selfRect.width)),
-      y: Math.max(0, Math.min(e.clientY - clientTop - offsetTop + this._scrollableParent.scrollTop, selfRect.height)),
+      x: Math.max(
+        0,
+        Math.min(
+          e.clientX - clientLeft - offsetLeft + this._scrollableParent.scrollLeft,
+          this._scrollableParent.scrollWidth
+        )
+      ),
+      y: Math.max(
+        0,
+        Math.min(
+          e.clientY - clientTop - offsetTop + this._scrollableParent.scrollTop,
+          this._scrollableParent.scrollHeight
+        )
+      ),
     };
   }
 
