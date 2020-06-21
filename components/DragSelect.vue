@@ -9,6 +9,7 @@
 import { Vue, Component, Prop, Provide } from "vue-property-decorator";
 import { findScrollableParent } from "@util/findScrollableParent";
 import { pairRectIntersect } from "@util/pairRectIntersect";
+import { AutoScroll } from "@util/autoScroll";
 import DragSelectOption from "@/DragSelectOption.vue";
 
 interface Point {
@@ -37,6 +38,7 @@ export default class DragSelect extends Vue {
   startPoint: Point | null = null;
   endPoint: Point | null = null;
   lastMouseEvent!: MouseEvent;
+  autoScroll!: AutoScroll;
 
   _scrollableParent!: HTMLElement;
   options: Map<selectedOptionKey, DragSelectOption> = new Map();
@@ -115,8 +117,15 @@ export default class DragSelect extends Vue {
     this._scrollableParent = findScrollableParent(this.$el as HTMLElement) as HTMLElement;
   }
 
+  beforeDestroy() {
+    window.removeEventListener("mousemove", this._onMousemove);
+    window.removeEventListener("mouseup", this._onMouseup);
+    this._scrollableParent.removeEventListener("scroll", this._onScrollableParentScroll);
+  }
+
   _onMousedown(e: MouseEvent) {
     this.startPoint = this._getCurrentPoint(e);
+    this.autoScroll = new AutoScroll(this.$el as HTMLElement);
     window.addEventListener("mousemove", this._onMousemove);
     window.addEventListener("mouseup", this._onMouseup);
     this._scrollableParent.addEventListener("scroll", this._onScrollableParentScroll);
@@ -131,6 +140,7 @@ export default class DragSelect extends Vue {
   _onMouseup() {
     this.startPoint = null;
     this.endPoint = null;
+    this.autoScroll.dispose();
 
     window.removeEventListener("mousemove", this._onMousemove);
     window.removeEventListener("mouseup", this._onMouseup);

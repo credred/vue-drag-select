@@ -1,9 +1,4 @@
-interface Rect {
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-}
+import { Rect } from "@/_typings";
 
 export const pairRectIntersect = (Rect1: Rect, Rect2: Rect) => {
   return (
