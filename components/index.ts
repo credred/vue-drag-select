@@ -8,6 +8,10 @@ const install = (VueInstance: typeof Vue) => {
   VueInstance.component(DragSelectOption.name, DragSelectOption);
 };
 
+if (typeof window !== "undefined" && window.Vue) {
+  install(window.Vue);
+}
+
 export default {
   install,
   DragSelect,
