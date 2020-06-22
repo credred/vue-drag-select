@@ -112,7 +112,23 @@ export default class DragSelect extends Vue {
     };
   }
 
+  /**
+   * avoid using border on dragSelect element
+   */
+  _isMouseEventonScrollbar(e: MouseEvent) {
+    const el = this.$el as HTMLElement;
+    if (e.clientX > el.offsetLeft + el.clientWidth) {
+      return true;
+    }
+    if (e.clientY > el.offsetTop + el.clientHeight) {
+      return true;
+    }
+  }
+
   _onMousedown(e: MouseEvent) {
+    if (this._isMouseEventonScrollbar(e)) {
+      return;
+    }
     this.startPoint = this._getCurrentPoint(e);
     this.autoScroll = new AutoScroll(this.$el as HTMLElement);
     window.addEventListener("mousemove", this._onMousemove);
