@@ -36,6 +36,11 @@ module.exports = {
         })
         storybookConfig.plugins = [].concat(vueCliServiceConfigPlugins, storybookConfigPlugin);
 
+        storybookConfig.externals = {
+            vue: "Vue",
+            'react': 'React',
+            'react-dom': 'ReactDOM',
+        }
 
         return storybookConfig;
     }
