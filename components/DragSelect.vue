@@ -11,6 +11,7 @@ import { findScrollableParent } from "@util/findScrollableParent";
 import { pairRectIntersect } from "@util/pairRectIntersect";
 import { AutoScroll } from "@util/autoScroll";
 import DragSelectOption from "@/DragSelectOption.vue";
+import { getDocument } from "./_util/getDocument";
 
 interface Point {
   x: number;
@@ -113,21 +114,35 @@ export default class DragSelect extends Vue {
   }
 
   /**
-   * avoid using border on dragSelect element
+   * avoid drag when mouseEvent trigger on border or scrollbar
    */
   _isMouseEventInClientArea(e: MouseEvent) {
+    const ownDocument = getDocument(this.$el as HTMLElement);
+    const [pageScrollTop = 0, pageScrollLeft = 0] = [
+      ownDocument?.scrollingElement?.scrollTop,
+      ownDocument?.scrollingElement?.scrollLeft,
+    ];
     const el = this.$el as HTMLElement;
 
-    if (e.clientX < el.offsetLeft + el.clientLeft || e.clientX > el.offsetLeft + el.clientLeft + el.clientWidth) {
+    if (
+      e.clientX + pageScrollLeft < el.offsetLeft + el.clientLeft ||
+      e.clientX + pageScrollLeft > el.offsetLeft + el.clientLeft + el.clientWidth
+    ) {
       return false;
     }
-    if (e.clientY < el.offsetTop + el.clientTop || e.clientY > el.offsetTop + el.clientTop + el.clientHeight) {
+    if (
+      e.clientY + pageScrollTop < el.offsetTop + el.clientTop ||
+      e.clientY + pageScrollTop > el.offsetTop + el.clientTop + el.clientHeight
+    ) {
       return false;
     }
     return true;
   }
 
   _onMousedown(e: MouseEvent) {
+    // sometime the last state was not cleaned up
+    this.cleanDrag();
+
     if (!this._isMouseEventInClientArea(e)) {
       return;
     }
@@ -145,15 +160,7 @@ export default class DragSelect extends Vue {
   }
 
   _onMouseup() {
-    this.startPoint = null;
-    this.endPoint = null;
-    this.autoScroll.dispose();
-
-    window.removeEventListener("mousemove", this._onMousemove);
-    window.removeEventListener("mouseup", this._onMouseup);
-    this._scrollableParent.removeEventListener("scroll", this._onScrollableParentScroll);
-
-    this.optionRectCache = null;
+    this.cleanDrag();
   }
 
   _onScrollableParentScroll(e: Event) {
@@ -213,6 +220,18 @@ export default class DragSelect extends Vue {
     if (needToUpdate) {
       this.selectedOptionKeys = selectedOptionKeys;
     }
+  }
+
+  cleanDrag() {
+    this.startPoint = null;
+    this.endPoint = null;
+    this.autoScroll?.dispose();
+
+    window.removeEventListener("mousemove", this._onMousemove);
+    window.removeEventListener("mouseup", this._onMouseup);
+    this._scrollableParent.removeEventListener("scroll", this._onScrollableParentScroll);
+
+    this.optionRectCache = null;
   }
 }
 </script>

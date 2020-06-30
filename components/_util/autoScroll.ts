@@ -1,5 +1,6 @@
 import { Rect } from "@/_typings/index";
 import { findScrollableParent } from "@util/findScrollableParent";
+import { getDocument } from "@util/getDocument";
 
 export class AutoScroll {
   scrollGutter: number;
@@ -23,10 +24,10 @@ export class AutoScroll {
     this.scrollableParent = findScrollableParent(scrollTargetElement);
     if (this.scrollableParent) {
       this.scrollableParentRect = {
-        left: this.scrollableParent.offsetLeft,
-        top: this.scrollableParent.offsetTop,
-        width: this.scrollableParent.offsetWidth,
-        height: this.scrollableParent.offsetHeight,
+        left: this.scrollableParent.offsetLeft + this.scrollableParent.clientLeft,
+        top: this.scrollableParent.offsetTop + this.scrollableParent.clientTop,
+        width: this.scrollableParent.clientWidth,
+        height: this.scrollableParent.clientHeight,
       };
       window.addEventListener("mousemove", this._onMouseMove);
     }
@@ -61,28 +62,34 @@ export class AutoScroll {
       right: this.scrollableParentRect.left + this.scrollableParentRect.width - this.scrollGutter,
     };
 
-    if (e.clientY < scrollableEdge.top) {
+    const ownDocument = getDocument(this.scrollableParent!);
+    const [pageScrollTop = 0, pageScrollLeft = 0] = [
+      ownDocument?.scrollingElement?.scrollTop,
+      ownDocument?.scrollingElement?.scrollLeft,
+    ];
+
+    if (e.clientY + pageScrollTop < scrollableEdge.top) {
       this.yScrollVelocity = -Math.min(
         this.maxScrollVelocity,
-        (this.maxScrollVelocity * -(e.clientY - scrollableEdge.top)) / this.maxScrollSpacing
+        (this.maxScrollVelocity * -(e.clientY + pageScrollTop - scrollableEdge.top)) / this.maxScrollSpacing
       );
-    } else if (e.clientY > scrollableEdge.bottom) {
+    } else if (e.clientY + pageScrollTop > scrollableEdge.bottom) {
       this.yScrollVelocity = Math.min(
         this.maxScrollVelocity,
-        (this.maxScrollVelocity * (e.clientY - scrollableEdge.bottom)) / this.maxScrollSpacing
+        (this.maxScrollVelocity * (e.clientY + pageScrollTop - scrollableEdge.bottom)) / this.maxScrollSpacing
       );
     } else {
       this.yScrollVelocity = 0;
     }
-    if (e.clientX < scrollableEdge.left) {
+    if (e.clientX + pageScrollLeft < scrollableEdge.left) {
       this.xScrollVelocity = -Math.min(
         this.maxScrollVelocity,
-        (this.maxScrollVelocity * -(e.clientX - scrollableEdge.left)) / this.maxScrollSpacing
+        (this.maxScrollVelocity * -(e.clientX + pageScrollLeft - scrollableEdge.left)) / this.maxScrollSpacing
       );
-    } else if (e.clientX > scrollableEdge.right) {
+    } else if (e.clientX + pageScrollLeft > scrollableEdge.right) {
       this.xScrollVelocity = Math.min(
         this.maxScrollVelocity,
-        (this.maxScrollVelocity * (e.clientX - scrollableEdge.right)) / this.maxScrollSpacing
+        (this.maxScrollVelocity * (e.clientX + pageScrollLeft - scrollableEdge.right)) / this.maxScrollSpacing
       );
     } else {
       this.xScrollVelocity = 0;
