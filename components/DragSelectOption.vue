@@ -8,7 +8,7 @@
 import { Vue, Component, Prop, Inject } from "vue-property-decorator";
 import DragSelect, { selectedOptionKey } from "@/DragSelect.vue";
 
-@Component
+@Component({ name: "DragSelectOption" })
 export default class DragSelectOption extends Vue {
   @Inject() dragSelect!: DragSelect;
   @Prop({ required: true }) itemKey!: selectedOptionKey;

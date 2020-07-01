@@ -29,7 +29,7 @@ interface Rect {
 export type selectedOptionKey = string | number;
 type selectedOptionKeys = Record<selectedOptionKey, boolean>;
 
-@Component
+@Component({ name: "DragSelect" })
 export default class DragSelect extends Vue {
   @Provide() dragSelect = this;
   @Prop({ default: () => [] }) value!: selectedOptionKey[];
