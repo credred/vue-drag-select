@@ -20,7 +20,7 @@
     "build:analyse": "vue-cli-service build --mode dev --formats umd --target lib --dest lib components/index.ts",
     "lint": "vue-cli-service lint",
     "storybook": "start-storybook -p 6006",
-    "build:doc": "build-storybook -o doc"
+    "build:docs": "build-storybook -o docs"
   },
   "peerDependencies": {
     "vue": "2.*"
