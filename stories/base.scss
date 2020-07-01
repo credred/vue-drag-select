@@ -1,8 +1,11 @@
 .drag-select {
     display: flex;
     flex-wrap: wrap;
-    width: 60%;
-    border: 1px solid #086f5a;
+
+    &__wrapper {
+        width: 60%;
+        border: 1px solid #086f5a;
+    }
 
     &__area {
         background: rgba(66, 153, 225, 0.5);

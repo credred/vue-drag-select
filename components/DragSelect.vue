@@ -1,12 +1,14 @@
 <template>
-  <div class="drag-select" style="position: relative;" @mousedown="_onMousedown">
-    <slot></slot>
-    <div class="drag-select__area" :class="dragAreaClass" :style="dragSelectAreaStyles"></div>
+  <div class="drag-select__wrapper">
+    <div ref="content" class="drag-select" style="position: relative;" @mousedown="_onMousedown">
+      <slot></slot>
+      <div class="drag-select__area" :class="dragAreaClass" :style="dragSelectAreaStyles"></div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Provide } from "vue-property-decorator";
+import { Vue, Component, Prop, Provide, Ref } from "vue-property-decorator";
 import { findScrollableParent } from "@util/findScrollableParent";
 import { pairRectIntersect } from "@util/pairRectIntersect";
 import { AutoScroll } from "@util/autoScroll";
@@ -36,6 +38,7 @@ export default class DragSelect extends Vue {
   @Prop() dragAreaClass!: string;
   @Prop({ type: Object, default: () => ({}) }) dragAreaStyle!: Record<string, string>;
   @Prop({ default: "" }) SelecteditemClass!: string;
+  @Ref("content") contentRef!: HTMLElement;
   startPoint: Point | null = null;
   endPoint: Point | null = null;
   lastMouseEvent!: MouseEvent;
@@ -84,7 +87,7 @@ export default class DragSelect extends Vue {
   }
 
   mounted() {
-    this._scrollableParent = findScrollableParent(this.$el as HTMLElement) as HTMLElement;
+    this._scrollableParent = findScrollableParent(this.contentRef) as HTMLElement;
   }
 
   beforeDestroy() {
@@ -94,22 +97,21 @@ export default class DragSelect extends Vue {
   }
 
   _getSelfRect() {
-    const el = this.$el as HTMLElement;
+    const el = this.contentRef;
     return {
       left: el.offsetLeft,
       top: el.offsetTop,
-      width: el.scrollWidth,
-      height: el.scrollHeight,
+      width: el.getBoundingClientRect().width,
+      height: el.getBoundingClientRect().height,
     };
   }
 
   _getCurrentPoint(e: MouseEvent) {
-    const selfRect = this._getSelfRect();
-    const { left, top } = this.$el.getBoundingClientRect();
+    const { left, top, width, height } = this.contentRef.getBoundingClientRect();
 
     return {
-      x: Math.max(0, Math.min(e.clientX - left - this.$el.clientLeft + this.$el.scrollLeft, selfRect.width)),
-      y: Math.max(0, Math.min(e.clientY - top - this.$el.clientTop + this.$el.scrollTop, selfRect.height)),
+      x: Math.max(0, Math.min(e.clientX - left - this.contentRef.clientLeft, width)),
+      y: Math.max(0, Math.min(e.clientY - top - this.contentRef.clientTop, height)),
     };
   }
 
@@ -117,12 +119,12 @@ export default class DragSelect extends Vue {
    * avoid drag when mouseEvent trigger on border or scrollbar
    */
   _isMouseEventInClientArea(e: MouseEvent) {
-    const ownDocument = getDocument(this.$el as HTMLElement);
+    const ownDocument = getDocument(this.contentRef);
     const [pageScrollTop = 0, pageScrollLeft = 0] = [
       ownDocument?.scrollingElement?.scrollTop,
       ownDocument?.scrollingElement?.scrollLeft,
     ];
-    const el = this.$el as HTMLElement;
+    const el = this.contentRef;
 
     if (
       e.clientX + pageScrollLeft < el.offsetLeft + el.clientLeft ||
@@ -147,7 +149,7 @@ export default class DragSelect extends Vue {
       return;
     }
     this.startPoint = this._getCurrentPoint(e);
-    this.autoScroll = new AutoScroll(this.$el as HTMLElement);
+    this.autoScroll = new AutoScroll(this.contentRef);
     window.addEventListener("mousemove", this._onMousemove);
     window.addEventListener("mouseup", this._onMouseup);
     this._scrollableParent.addEventListener("scroll", this._onScrollableParentScroll);
