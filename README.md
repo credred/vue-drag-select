@@ -26,7 +26,7 @@ Vue.use(VueDragSelect);
 ```vue
 <template>
   <drag-select v-model="selection">
-    <drag-select-option value="selectValue" item-key="uniqueKey"></drag-select-option>
+    <drag-select-option item-key="uniqueKey"></drag-select-option>
   </drag-select>
 </template>
 
