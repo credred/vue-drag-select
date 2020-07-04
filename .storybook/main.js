@@ -37,6 +37,7 @@ module.exports = {
         storybookConfig.plugins = [].concat(vueCliServiceConfigPlugins, storybookConfigPlugin);
         
         if (process.env.NODE_ENV === "production") {
+            /** override externals */
             storybookConfig.externals = {
                 vue: "Vue",
                 'react': 'React',

@@ -24,6 +24,8 @@ module.exports = {
           opts.happyPackMode = false;
           return opts;
         });
+
+      config.externals(["vue-class-component", "vue-property-decorator"]);
     }
   },
   parallel: false,
