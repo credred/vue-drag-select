@@ -1,5 +1,5 @@
-import DragSelect from "../components/DragSelect.vue";
-import DragSelectOption from "../components/DragSelectOption.vue";
+import DragSelect from "@/DragSelect.vue";
+import DragSelectOption from "@/DragSelectOption.vue";
 import "./base.scss";
 import Vue from "vue";
 
