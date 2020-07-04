@@ -9,11 +9,11 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Provide, Ref, Model } from "vue-property-decorator";
-import { findScrollableParent } from "@util/findScrollableParent";
-import { pairRectIntersect } from "@util/pairRectIntersect";
-import { AutoScroll } from "@util/autoScroll";
-import DragSelectOption from "@/DragSelectOption.vue";
+import { findScrollableParent } from "./_util/findScrollableParent";
+import { pairRectIntersect } from "./_util/pairRectIntersect";
+import { AutoScroll } from "./_util/autoScroll";
 import { getDocument } from "./_util/getDocument";
+import DragSelectOption from "./DragSelectOption.vue";
 
 interface Point {
   x: number;

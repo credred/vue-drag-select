@@ -35,6 +35,7 @@
     "components/**/*.ts",
     "components/**/*.tsx",
     "components/**/*.vue",
+    "typings/**/*.d.ts",
     "tests/**/*.ts",
     "tests/**/*.tsx"
   ],

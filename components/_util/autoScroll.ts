@@ -1,6 +1,6 @@
-import { Rect } from "@/_typings/index";
-import { findScrollableParent } from "@util/findScrollableParent";
-import { getDocument } from "@util/getDocument";
+import type { Rect } from "../_typings/index";
+import { findScrollableParent } from "./findScrollableParent";
+import { getDocument } from "./getDocument";
 
 export class AutoScroll {
   scrollGutter: number;

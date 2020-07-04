@@ -1,4 +1,4 @@
-import { getDocument } from "@/_util/getDocument";
+import { getDocument } from "./getDocument";
 
 /**
  * mark element is scrollable to avoid expensive operation getComputedStyle

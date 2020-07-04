@@ -1,4 +1,4 @@
-import { Rect } from "@/_typings";
+import type { Rect } from "../_typings";
 
 export const pairRectIntersect = (Rect1: Rect, Rect2: Rect) => {
   return (

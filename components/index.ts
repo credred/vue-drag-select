@@ -1,7 +1,7 @@
 import Vue from "vue";
 
-import DragSelect from "@/DragSelect.vue";
-import DragSelectOption from "@/DragSelectOption.vue";
+import DragSelect from "./DragSelect.vue";
+import DragSelectOption from "./DragSelectOption.vue";
 
 const install = (VueInstance: typeof Vue) => {
   VueInstance.component("DragSelect", DragSelect);
