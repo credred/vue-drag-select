@@ -4,7 +4,7 @@ const presetVue = require("@storybook/vue/dist/server/framework-preset-vue");
 presetVue.babelDefault = config => config;
 
 module.exports = {
-    stories: ["../stories/**/*.stories.jsx"],
+    stories: ["../stories/base.stories.jsx", "../stories/advance.stories.jsx"],
     /**
      * @param storybookConfig {import("webpack").Configuration}
      */
