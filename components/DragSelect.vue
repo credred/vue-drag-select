@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Provide, Ref } from "vue-property-decorator";
+import { Vue, Component, Prop, Provide, Ref, Model } from "vue-property-decorator";
 import { findScrollableParent } from "@util/findScrollableParent";
 import { pairRectIntersect } from "@util/pairRectIntersect";
 import { AutoScroll } from "@util/autoScroll";
@@ -33,12 +33,12 @@ type selectedOptionKeys = Record<selectedOptionKey, boolean>;
 
 @Component({ name: "DragSelect" })
 export default class DragSelect extends Vue {
+  @Ref("content") contentRef!: HTMLElement;
   @Provide() dragSelect = this;
-  @Prop({ default: () => [] }) value!: selectedOptionKey[];
+  @Model("change", { required: true, default: [] }) value!: selectedOptionKey[];
   @Prop() dragAreaClass!: string;
   @Prop({ type: Object, default: () => ({}) }) dragAreaStyle!: Record<string, string>;
   @Prop({ default: "" }) SelecteditemClass!: string;
-  @Ref("content") contentRef!: HTMLElement;
   startPoint: Point | null = null;
   endPoint: Point | null = null;
   lastMouseEvent!: MouseEvent;
