@@ -11,7 +11,7 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "declaration": true,
-    "outDir": "lib",
+    "outDir": "typings",
     "baseUrl": ".",
     "types": [
       "webpack-env"

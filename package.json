@@ -9,12 +9,14 @@
   ],
   "files": [
     "components",
-    "lib"
+    "lib",
+    "typings",
+    "tsconfig.json"
   ],
   "homepage": "https://github.com/credred/vue-drag-select#readme",
   "license": "MIT",
   "main": "lib/vue-drag-select.umd.min.js",
-  "typings": "lib/index.d.ts",
+  "typings": "typings/index.d.ts",
   "scripts": {
     "build": "vue-cli-service build --target lib --dest lib components/index.ts",
     "build:analyse": "vue-cli-service build --mode dev --formats umd --target lib --dest lib components/index.ts",
