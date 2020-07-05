@@ -14,16 +14,12 @@ export const base = () =>
         value: [],
       };
     },
-    methods: {
-      handleChange(value) {
-        this.value = value;
-      },
-    },
     render() {
       return (
         <div>
+          <div>try drag or click</div>
           <div>selected: {this.value.join(",")}</div>
-          <DragSelect value={this.value} onChange={this.handleChange}>
+          <DragSelect vModel={this.value}>
             {Array(20)
               .fill(0)
               .map((v, index) => (
@@ -52,7 +48,7 @@ export const scroll = () =>
         <div>
           <div>scroll on dragSelect compoent itself</div>
           <div>selected: {this.value.join(",")}</div>
-          <DragSelect value={this.value} style={{ height: "300px", overflow: "auto" }} onChange={this.handleChange}>
+          <DragSelect vModel={this.value} style={{ height: "300px", overflow: "auto" }}>
             {Array(30)
               .fill(0)
               .map((v, index) => (
@@ -81,7 +77,7 @@ export const scrollOnParent = () =>
         <div style={{ height: "300px", overflow: "auto" }}>
           <div>scroll on dragSelect compoent parent</div>
           <div>selected: {this.value.join(",")}</div>
-          <DragSelect value={this.value} onChange={this.handleChange}>
+          <DragSelect vModel={this.value}>
             {Array(30)
               .fill(0)
               .map((v, index) => (
@@ -110,11 +106,7 @@ export const dragOnlyInRect = () =>
         <div>
           <div>drag only in client(mousedown event will not trigger on scrollbar or border)</div>
           <div>selected: {this.value.join(",")}</div>
-          <DragSelect
-            value={this.value}
-            style={{ height: "300px", overflow: "auto", border: "20px solid #d83512" }}
-            onChange={this.handleChange}
-          >
+          <DragSelect vModel={this.value} style={{ height: "300px", overflow: "auto", border: "20px solid #d83512" }}>
             {Array(30)
               .fill(0)
               .map((v, index) => (
