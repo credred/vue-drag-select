@@ -27,7 +27,7 @@ module.exports = {
         const vueCliServiceConfig = require("@vue/cli-service/webpack.config");
         // ignore vue-loader of storybookCOnfig.module.rules
         const rules = storybookConfig.module.rules.filter(rule => !/vue-loader/.test(rule.loader));
-        storybookConfig.module.rules = [...vueCliServiceConfig.module.rules, ...rules];
+        storybookConfig.module.rules = [ ...rules,...vueCliServiceConfig.module.rules,];
         storybookConfig.optimization = vueCliServiceConfig.optimization;
         storybookConfig.resolveLoader = vueCliServiceConfig.resolveLoader;
         // avoid override storybookConfig.resolve.alias.vue$,use runtimeCompiler version
