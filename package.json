@@ -32,6 +32,7 @@
     "vue": "2.*"
   },
   "devDependencies": {
+    "@storybook/addon-storysource": "^5.3.19",
     "@storybook/vue": "^5.3.19",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",

@@ -1,9 +1,22 @@
+const path = require("path");
 const presetVue = require("@storybook/vue/dist/server/framework-preset-vue");
 // override babelDefault to ignore babel-preset-vue
 // use @vue/babel-preset-vue instead of babel-preset-vue
 presetVue.babelDefault = config => config;
 
 module.exports = {
+    addons: [{
+        name: '@storybook/addon-storysource',
+        options: {
+          rule: {
+            // test: [/\.stories\.jsx?$/], This is default
+            include: [path.resolve(__dirname, '../stories')], // You can specify directories
+          },
+          loaderOptions: {
+            prettierConfig: { printWidth: 120, singleQuote: false },
+          },
+        },
+    }],
     stories: ["../stories/base.stories.jsx", "../stories/advance.stories.jsx"],
     /**
      * @param storybookConfig {import("webpack").Configuration}
@@ -12,11 +25,9 @@ module.exports = {
         /** @type {import("webpack").Configuration} */
         storybookConfig.devtool = "source-map";
         const vueCliServiceConfig = require("@vue/cli-service/webpack.config");
-        // keep storybook md loader
-        const mdRule = storybookConfig.module.rules.find(rule => rule.test.source === "\\.md$");
-        vueCliServiceConfig.module.rules.push(mdRule);
-        
-        storybookConfig.module = vueCliServiceConfig.module;
+        // ignore vue-loader of storybookCOnfig.module.rules
+        const rules = storybookConfig.module.rules.filter(rule => !/vue-loader/.test(rule.loader));
+        storybookConfig.module.rules = [...vueCliServiceConfig.module.rules, ...rules];
         storybookConfig.optimization = vueCliServiceConfig.optimization;
         storybookConfig.resolveLoader = vueCliServiceConfig.resolveLoader;
         // avoid override storybookConfig.resolve.alias.vue$,use runtimeCompiler version
