@@ -29,14 +29,14 @@ interface Rect {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type selectedOptionKey = string | number;
-type selectedOptionKeys = Record<selectedOptionKey, boolean>;
+export type selectedOptionValue = string | number;
+type selectedOptionValues = Record<selectedOptionValue, boolean>;
 
 @Component({ name: "DragSelect" })
 export default class DragSelect extends Vue {
   @Ref("content") contentRef!: HTMLElement;
   @Provide() dragSelect = this;
-  @Model("change", { required: true, default: [] }) value!: selectedOptionKey[];
+  @Model("change", { required: true, default: [] }) value!: selectedOptionValue[];
   @Prop() dragAreaClass!: string;
   @Prop({ type: Object, default: () => ({}) }) dragAreaStyle!: Record<string, string>;
   @Prop({ default: "" }) SelecteditemClass!: string;
@@ -48,8 +48,8 @@ export default class DragSelect extends Vue {
   autoScroll!: AutoScroll;
 
   _scrollableParent!: HTMLElement;
-  options: Map<selectedOptionKey, DragSelectOption> = new Map();
-  optionRectCache: Map<selectedOptionKey, Rect> | null = null;
+  options: Map<selectedOptionValue, DragSelectOption> = new Map();
+  optionRectCache: Map<selectedOptionValue, Rect> | null = null;
   /** calc drag area rect by startpoint and endpoint */
   get dragSelectAreaRect(): Rect | null {
     if (!this.startPoint || !this.endPoint) return null;
@@ -77,38 +77,38 @@ export default class DragSelect extends Vue {
   /**
    * mapping for this.value
    */
-  get selectedOptionKeys() {
-    const selectedOptionKeys: selectedOptionKeys = {};
+  get selectedOptionValues() {
+    const selectedOptionValues: selectedOptionValues = {};
     this.value.forEach((v) => {
-      selectedOptionKeys[v] = true;
+      selectedOptionValues[v] = true;
     });
-    return selectedOptionKeys;
+    return selectedOptionValues;
   }
 
-  set selectedOptionKeys(selectedOptionKeys) {
-    const selectedOptionKeysForDiff = Object.assign({}, selectedOptionKeys);
+  set selectedOptionValues(selectedOptionValues) {
+    const selectedOptionValuesForDiff = Object.assign({}, selectedOptionValues);
 
     let needToUpdate = false;
 
     if (!needToUpdate) {
-      for (const key in this.selectedOptionKeys) {
-        delete selectedOptionKeysForDiff[key];
-        if (this.selectedOptionKeys[key] !== selectedOptionKeys[key]) {
+      for (const key in this.selectedOptionValues) {
+        delete selectedOptionValuesForDiff[key];
+        if (this.selectedOptionValues[key] !== selectedOptionValues[key]) {
           needToUpdate = true;
           break;
         }
       }
     }
 
-    for (const key in selectedOptionKeysForDiff) {
-      if (this.selectedOptionKeys[key] !== selectedOptionKeys[key]) {
+    for (const key in selectedOptionValuesForDiff) {
+      if (this.selectedOptionValues[key] !== selectedOptionValues[key]) {
         needToUpdate = true;
         break;
       }
     }
 
     if (needToUpdate) {
-      this.$emit("change", Object.keys(selectedOptionKeys));
+      this.$emit("change", Object.keys(selectedOptionValues));
     }
   }
 
@@ -189,15 +189,15 @@ export default class DragSelect extends Vue {
     }
     const optionElSet = new WeakSet(Array.from(this.options.values()).map((option) => option.$el));
     let target = e.target;
-    const selectedOptionKey: selectedOptionKeys = {};
+    const selectedOptionValue: selectedOptionValues = {};
     while (target instanceof Element && target !== this.contentRef) {
       if (optionElSet.has(target)) {
-        selectedOptionKey[((target as VueElement).__vue__ as DragSelectOption).itemKey] = true;
+        selectedOptionValue[((target as VueElement).__vue__ as DragSelectOption).value] = true;
         break;
       }
       target = target.parentElement;
     }
-    this.selectedOptionKeys = selectedOptionKey;
+    this.selectedOptionValues = selectedOptionValue;
   }
 
   _onMousemove(e: MouseEvent) {
@@ -221,14 +221,14 @@ export default class DragSelect extends Vue {
     }
     this.endPoint = this._getCurrentPoint(this.lastMouseEvent);
 
-    const selectedOptionKeys: selectedOptionKeys = {};
-    for (const [itemKey, option] of this.options) {
+    const selectedOptionValues: selectedOptionValues = {};
+    for (const [value, option] of this.options) {
       if (!this.optionRectCache) {
         this.optionRectCache = new Map();
       }
-      if (!this.optionRectCache.has(itemKey)) {
+      if (!this.optionRectCache.has(value)) {
         const optionEl = option.$el as HTMLElement;
-        this.optionRectCache.set(itemKey, {
+        this.optionRectCache.set(value, {
           left: optionEl.offsetLeft,
           top: optionEl.offsetTop,
           width: optionEl.offsetWidth,
@@ -237,14 +237,14 @@ export default class DragSelect extends Vue {
       }
       const isPairRectIsIntersect = pairRectIntersect(
         this.dragSelectAreaRect!,
-        this.optionRectCache.get(itemKey) as Rect
+        this.optionRectCache.get(value) as Rect
       );
       if (isPairRectIsIntersect) {
-        selectedOptionKeys[itemKey] = true;
+        selectedOptionValues[value] = true;
       }
     }
 
-    this.selectedOptionKeys = selectedOptionKeys;
+    this.selectedOptionValues = selectedOptionValues;
   }
 
   cleanDrag() {

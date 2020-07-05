@@ -23,8 +23,8 @@ export const group = () =>
               .fill(0)
               .map((v, index) => (
                 <div style={{ border: "1px solid #000000", margin: "10px" }}>
-                  <DragSelectOption itemKey={2 * index}>{2 * index}</DragSelectOption>
-                  <DragSelectOption itemKey={2 * index + 1}>{2 * index + 1}</DragSelectOption>
+                  <DragSelectOption value={2 * index}>{2 * index}</DragSelectOption>
+                  <DragSelectOption value={2 * index + 1}>{2 * index + 1}</DragSelectOption>
                 </div>
               ))}
           </DragSelect>

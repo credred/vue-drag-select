@@ -23,7 +23,7 @@ export const base = () =>
             {Array(20)
               .fill(0)
               .map((v, index) => (
-                <DragSelectOption itemKey={index}>{index}</DragSelectOption>
+                <DragSelectOption value={index}>{index}</DragSelectOption>
               ))}
           </DragSelect>
         </div>
@@ -52,7 +52,7 @@ export const scroll = () =>
             {Array(30)
               .fill(0)
               .map((v, index) => (
-                <DragSelectOption itemKey={index}>{index}</DragSelectOption>
+                <DragSelectOption value={index}>{index}</DragSelectOption>
               ))}
           </DragSelect>
         </div>
@@ -81,7 +81,7 @@ export const scrollOnParent = () =>
             {Array(30)
               .fill(0)
               .map((v, index) => (
-                <DragSelectOption itemKey={index}>{index}</DragSelectOption>
+                <DragSelectOption value={index}>{index}</DragSelectOption>
               ))}
           </DragSelect>
         </div>
@@ -110,7 +110,7 @@ export const dragOnlyInRect = () =>
             {Array(30)
               .fill(0)
               .map((v, index) => (
-                <DragSelectOption itemKey={index}>{index}</DragSelectOption>
+                <DragSelectOption value={index}>{index}</DragSelectOption>
               ))}
           </DragSelect>
         </div>
