@@ -1,6 +1,6 @@
 <template>
   <div class="drag-select__wrapper">
-    <div ref="content" class="drag-select" style="position: relative;" @mousedown="_onMousedown">
+    <div ref="content" class="drag-select" style="position: relative;" @mousedown="_onMousedown" @click="_onClick">
       <slot></slot>
       <div class="drag-select__area" :class="dragAreaClass" :style="dragSelectAreaStyles"></div>
     </div>
@@ -14,6 +14,7 @@ import { pairRectIntersect } from "./_util/pairRectIntersect";
 import { AutoScroll } from "./_util/autoScroll";
 import { getDocument } from "./_util/getDocument";
 import DragSelectOption from "./DragSelectOption.vue";
+import { VueElement } from "./_typings";
 
 interface Point {
   x: number;
@@ -41,6 +42,8 @@ export default class DragSelect extends Vue {
   @Prop({ default: "" }) SelecteditemClass!: string;
   startPoint: Point | null = null;
   endPoint: Point | null = null;
+  /** mark as having triggered mousemove event. if true, prevent trigger click event */
+  dragged = false;
   lastMouseEvent!: MouseEvent;
   autoScroll!: AutoScroll;
 
@@ -83,7 +86,30 @@ export default class DragSelect extends Vue {
   }
 
   set selectedOptionKeys(selectedOptionKeys) {
-    this.$emit("change", Object.keys(selectedOptionKeys));
+    const selectedOptionKeysForDiff = Object.assign({}, selectedOptionKeys);
+
+    let needToUpdate = false;
+
+    if (!needToUpdate) {
+      for (const key in this.selectedOptionKeys) {
+        delete selectedOptionKeysForDiff[key];
+        if (this.selectedOptionKeys[key] !== selectedOptionKeys[key]) {
+          needToUpdate = true;
+          break;
+        }
+      }
+    }
+
+    for (const key in selectedOptionKeysForDiff) {
+      if (this.selectedOptionKeys[key] !== selectedOptionKeys[key]) {
+        needToUpdate = true;
+        break;
+      }
+    }
+
+    if (needToUpdate) {
+      this.$emit("change", Object.keys(selectedOptionKeys));
+    }
   }
 
   mounted() {
@@ -153,6 +179,25 @@ export default class DragSelect extends Vue {
     window.addEventListener("mousemove", this._onMousemove);
     window.addEventListener("mouseup", this._onMouseup);
     this._scrollableParent.addEventListener("scroll", this._onScrollableParentScroll);
+
+    this.dragged = false;
+  }
+
+  _onClick(e: MouseEvent) {
+    if (this.dragged) {
+      return;
+    }
+    const optionElSet = new WeakSet(Array.from(this.options.values()).map((option) => option.$el));
+    let target = e.target;
+    const selectedOptionKey: selectedOptionKeys = {};
+    while (target instanceof Element && target !== this.contentRef) {
+      if (optionElSet.has(target)) {
+        selectedOptionKey[((target as VueElement).__vue__ as DragSelectOption).itemKey] = true;
+        break;
+      }
+      target = target.parentElement;
+    }
+    this.selectedOptionKeys = selectedOptionKey;
   }
 
   _onMousemove(e: MouseEvent) {
@@ -170,13 +215,13 @@ export default class DragSelect extends Vue {
   }
 
   _drag(e: Event) {
+    this.dragged = true;
     if ((e as MouseWheelEvent).clientX !== undefined) {
       this.lastMouseEvent = e as MouseEvent;
     }
     this.endPoint = this._getCurrentPoint(this.lastMouseEvent);
 
     const selectedOptionKeys: selectedOptionKeys = {};
-    const selectedOptionKeysForDiff: selectedOptionKeys = {};
     for (const [itemKey, option] of this.options) {
       if (!this.optionRectCache) {
         this.optionRectCache = new Map();
@@ -196,32 +241,10 @@ export default class DragSelect extends Vue {
       );
       if (isPairRectIsIntersect) {
         selectedOptionKeys[itemKey] = true;
-        selectedOptionKeysForDiff[itemKey] = true;
       }
     }
 
-    let needToUpdate = false;
-
-    if (!needToUpdate) {
-      for (const key in this.selectedOptionKeys) {
-        delete selectedOptionKeysForDiff[key];
-        if (this.selectedOptionKeys[key] !== selectedOptionKeys[key]) {
-          needToUpdate = true;
-          break;
-        }
-      }
-    }
-
-    for (const key in selectedOptionKeysForDiff) {
-      if (this.selectedOptionKeys[key] !== selectedOptionKeys[key]) {
-        needToUpdate = true;
-        break;
-      }
-    }
-
-    if (needToUpdate) {
-      this.selectedOptionKeys = selectedOptionKeys;
-    }
+    this.selectedOptionKeys = selectedOptionKeys;
   }
 
   cleanDrag() {

@@ -4,3 +4,7 @@ export interface Rect {
   width: number;
   height: number;
 }
+
+export interface VueElement extends Element {
+  __vue__: Vue;
+}
