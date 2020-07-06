@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const setIsEqual = (set1: Set<any>, set2: Set<any>) => {
   if (set1.size !== set2.size) {
     return false;
@@ -11,4 +12,4 @@ export const setIsEqual = (set1: Set<any>, set2: Set<any>) => {
     }
   }
   return set2ForDiff.size === 0;
-}
+};

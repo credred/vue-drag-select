@@ -52,7 +52,8 @@ export default class DragSelect extends Vue {
   options: Map<selectedOptionValue, DragSelectOption> = new Map();
   optionRectCache: Map<selectedOptionValue, Rect> | null = null;
 
-  originSelectedOptionValues!: Set<selectedOptionValue>;
+  /** init on mousedown event if controlKeyActive is true,combine newSelectedOptionValues and originSelectedOptionValues into selectedOptionValues */
+  originSelectedOptionValues: Set<selectedOptionValue> | null = null;
 
   controlKeyActive = false;
   shiftKeyActive = false;
@@ -85,8 +86,8 @@ export default class DragSelect extends Vue {
   set selectedOptionValues(newSelectedOptionValues) {
     const oldSelectedOptionValues = this.selectedOptionValues;
     let actualNewSelectedOptionValues: selectedOptionValue[];
-
-    if (this.controlKeyActive) {
+    /** originSelectedOptionValues was set on mouseDown event when controlKeyActive is true */
+    if (this.controlKeyActive && this.originSelectedOptionValues) {
       const originSelectedOptionValues = this.originSelectedOptionValues;
       const unionOptionValues = new Set([...originSelectedOptionValues, ...newSelectedOptionValues]);
       const differenceValues: selectedOptionValue[] = [];
@@ -97,7 +98,14 @@ export default class DragSelect extends Vue {
       }
       actualNewSelectedOptionValues = differenceValues;
     } else {
-      actualNewSelectedOptionValues = Array.from(newSelectedOptionValues);
+      const originSelectedOptionValues = this.originSelectedOptionValues || new Set();
+      for (const originSelectedOptionValue of originSelectedOptionValues) {
+        if (newSelectedOptionValues.has(originSelectedOptionValue)) {
+          /** remove insetsect values */
+          originSelectedOptionValues.delete(originSelectedOptionValue);
+        }
+      }
+      actualNewSelectedOptionValues = Array.from(new Set([...newSelectedOptionValues, ...originSelectedOptionValues]));
     }
     if (!setIsEqual(oldSelectedOptionValues, new Set(actualNewSelectedOptionValues))) {
       this.$emit("change", actualNewSelectedOptionValues);
@@ -178,7 +186,11 @@ export default class DragSelect extends Vue {
     this._scrollableParent.addEventListener("scroll", this._onScrollableParentScroll);
 
     this.dragged = false;
-    this.originSelectedOptionValues = new Set(this.selectedOptionValues);
+    if (this.controlKeyActive) {
+      this.originSelectedOptionValues = new Set(this.selectedOptionValues);
+    } else {
+      this.originSelectedOptionValues = null;
+    }
   }
 
   _onClick(e: MouseEvent) {
