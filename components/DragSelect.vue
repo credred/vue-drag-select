@@ -30,7 +30,7 @@ interface Rect {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type selectedOptionValue = string | number;
-type selectedOptionValues = Record<selectedOptionValue, boolean>;
+type selectedOptionValues = selectedOptionValue[];
 
 @Component({ name: "DragSelect" })
 export default class DragSelect extends Vue {
@@ -78,37 +78,21 @@ export default class DragSelect extends Vue {
    * mapping for this.value
    */
   get selectedOptionValues() {
-    const selectedOptionValues: selectedOptionValues = {};
-    this.value.forEach((v) => {
-      selectedOptionValues[v] = true;
-    });
-    return selectedOptionValues;
+    return new Set(this.value);
   }
 
-  set selectedOptionValues(selectedOptionValues) {
-    const selectedOptionValuesForDiff = Object.assign({}, selectedOptionValues);
-
-    let needToUpdate = false;
-
-    if (!needToUpdate) {
-      for (const key in this.selectedOptionValues) {
-        delete selectedOptionValuesForDiff[key];
-        if (this.selectedOptionValues[key] !== selectedOptionValues[key]) {
-          needToUpdate = true;
-          break;
-        }
-      }
-    }
-
-    for (const key in selectedOptionValuesForDiff) {
-      if (this.selectedOptionValues[key] !== selectedOptionValues[key]) {
+  set selectedOptionValues(newSelectedOptionValues) {
+    const oldSelectedOptionValues = this.selectedOptionValues;
+    let needToUpdate;
+    const unionOptionValues = new Set([...oldSelectedOptionValues, ...newSelectedOptionValues]);
+    for (const value of unionOptionValues) {
+      if (oldSelectedOptionValues.has(value) !== newSelectedOptionValues.has(value)) {
         needToUpdate = true;
         break;
       }
     }
-
     if (needToUpdate) {
-      this.$emit("change", Object.keys(selectedOptionValues));
+      this.$emit("change", Array.from(newSelectedOptionValues));
     }
   }
 
@@ -189,15 +173,13 @@ export default class DragSelect extends Vue {
     }
     const optionElSet = new WeakSet(Array.from(this.options.values()).map((option) => option.$el));
     let target = e.target;
-    const selectedOptionValue: selectedOptionValues = {};
     while (target instanceof Element && target !== this.contentRef) {
       if (optionElSet.has(target)) {
-        selectedOptionValue[((target as VueElement).__vue__ as DragSelectOption).value] = true;
+        this.selectedOptionValues = new Set([((target as VueElement).__vue__ as DragSelectOption).value]);
         break;
       }
       target = target.parentElement;
     }
-    this.selectedOptionValues = selectedOptionValue;
   }
 
   _onMousemove(e: MouseEvent) {
@@ -221,7 +203,7 @@ export default class DragSelect extends Vue {
     }
     this.endPoint = this._getCurrentPoint(this.lastMouseEvent);
 
-    const selectedOptionValues: selectedOptionValues = {};
+    const selectedOptionValues: Set<selectedOptionValue> = new Set();
     for (const [value, option] of this.options) {
       if (!this.optionRectCache) {
         this.optionRectCache = new Map();
@@ -240,7 +222,7 @@ export default class DragSelect extends Vue {
         this.optionRectCache.get(value) as Rect
       );
       if (isPairRectIsIntersect) {
-        selectedOptionValues[value] = true;
+        selectedOptionValues.add(value);
       }
     }
 

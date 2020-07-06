@@ -24,7 +24,7 @@ export default class DragSelectOption extends Vue {
   }
 
   get isSelected() {
-    return !!this.dragSelect.selectedOptionValues[this.value];
+    return !!this.dragSelect.selectedOptionValues.has(this.value);
   }
 
   created() {
