@@ -59,13 +59,7 @@ export default class DragSelect extends Vue {
 
   /** calc drag area rect by startpoint and endpoint */
   get dragSelectAreaRect(): Rect | null {
-    if (!this.startPoint || !this.endPoint) return null;
-    return {
-      left: Math.min(this.startPoint.x, this.endPoint.x),
-      top: Math.min(this.startPoint.y, this.endPoint.y),
-      width: Math.abs(this.startPoint.x - this.endPoint.x),
-      height: Math.abs(this.startPoint.y - this.endPoint.y),
-    };
+    return this._getRectByPoint(this.startPoint, this.endPoint);
   }
 
   get dragSelectAreaStyles() {
@@ -191,14 +185,9 @@ export default class DragSelect extends Vue {
     if (this.dragged) {
       return;
     }
-    const optionElSet = new WeakSet(Array.from(this.options.values()).map((option) => option.$el));
-    let target = e.target;
-    while (target instanceof Element && target !== this.contentRef) {
-      if (optionElSet.has(target)) {
-        this.selectedOptionValues = new Set([((target as VueElement).__vue__ as DragSelectOption).value]);
-        break;
-      }
-      target = target.parentElement;
+    const eventTargetDragSelectOption = this._getDragSelectOptionByMouseEvent(e);
+    if (eventTargetDragSelectOption) {
+      this.selectedOptionValues = new Set([eventTargetDragSelectOption.value]);
     }
   }
 
@@ -223,6 +212,44 @@ export default class DragSelect extends Vue {
     }
     this.endPoint = this._getCurrentPoint(this.lastMouseEvent);
 
+    this.selectedOptionValues = this._getSelectedOptionValuesByRect(this.dragSelectAreaRect!);
+  }
+
+  cleanDrag() {
+    this.startPoint = null;
+    this.endPoint = null;
+    this.autoScroll?.dispose();
+
+    window.removeEventListener("mousemove", this._onMousemove);
+    window.removeEventListener("mouseup", this._onMouseup);
+    this._scrollableParent.removeEventListener("scroll", this._onScrollableParentScroll);
+
+    this.optionRectCache = null;
+  }
+
+  _getDragSelectOptionByMouseEvent(e: MouseEvent) {
+    let target = e.target;
+    const optionElSet = new WeakSet(Array.from(this.options.values()).map((option) => option.$el));
+    while (target instanceof Element && target !== this.contentRef) {
+      if (optionElSet.has(target)) {
+        return (target as VueElement).__vue__ as DragSelectOption;
+      }
+      target = target.parentElement;
+    }
+    return null;
+  }
+
+  _getRectByPoint(startPoint: Point | null, endPoint: Point | null) {
+    if (!startPoint || !endPoint) return null;
+    return {
+      left: Math.min(startPoint.x, endPoint.x),
+      top: Math.min(startPoint.y, endPoint.y),
+      width: Math.abs(startPoint.x - endPoint.x),
+      height: Math.abs(startPoint.y - endPoint.y),
+    };
+  }
+
+  _getSelectedOptionValuesByRect(rect: Rect) {
     const selectedOptionValues: Set<selectedOptionValue> = new Set();
     for (const [value, option] of this.options) {
       if (!this.optionRectCache) {
@@ -237,28 +264,13 @@ export default class DragSelect extends Vue {
           height: optionEl.offsetHeight,
         });
       }
-      const isPairRectIsIntersect = pairRectIntersect(
-        this.dragSelectAreaRect!,
-        this.optionRectCache.get(value) as Rect
-      );
+      const isPairRectIsIntersect = pairRectIntersect(rect, this.optionRectCache.get(value) as Rect);
       if (isPairRectIsIntersect) {
         selectedOptionValues.add(value);
       }
     }
 
-    this.selectedOptionValues = selectedOptionValues;
-  }
-
-  cleanDrag() {
-    this.startPoint = null;
-    this.endPoint = null;
-    this.autoScroll?.dispose();
-
-    window.removeEventListener("mousemove", this._onMousemove);
-    window.removeEventListener("mouseup", this._onMouseup);
-    this._scrollableParent.removeEventListener("scroll", this._onScrollableParentScroll);
-
-    this.optionRectCache = null;
+    return selectedOptionValues;
   }
 
   _handleKeyChange(e: KeyboardEvent) {
