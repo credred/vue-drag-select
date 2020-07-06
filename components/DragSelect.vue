@@ -16,6 +16,7 @@ import { getDocument } from "./_util/getDocument";
 import { setIsEqual } from "./_util/setIsEqual";
 import DragSelectOption from "./DragSelectOption.vue";
 import { VueElement } from "./_typings";
+import { createDecorator } from "vue-class-component";
 
 interface Point {
   x: number;
@@ -33,6 +34,19 @@ interface Rect {
 export type selectedOptionValue = string | number;
 type selectedOptionValues = selectedOptionValue[];
 
+const withPlainSetSelectedOptionValues = createDecorator((options, key) => {
+  const originalMethod = options.methods![key];
+
+  // https://www.stephanboyer.com/post/132/what-are-covariance-and-contravariance
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
+  options.methods[key] = function wrapperMethod(this: DragSelect, ...args) {
+    this.plainSetSelectedOptionValues = true;
+    originalMethod.apply(this, args);
+    this.plainSetSelectedOptionValues = false;
+  };
+});
+
 @Component({ name: "DragSelect" })
 export default class DragSelect extends Vue {
   @Ref("content") contentRef!: HTMLElement;
@@ -40,7 +54,9 @@ export default class DragSelect extends Vue {
   @Model("change", { required: true, default: [] }) value!: selectedOptionValue[];
   @Prop() dragAreaClass!: string;
   @Prop({ type: Object, default: () => ({}) }) dragAreaStyle!: Record<string, string>;
-  @Prop({ default: "" }) SelecteditemClass!: string;
+  @Prop({ default: "" }) selectedOptionClass!: string;
+  @Prop({ type: Object, default: () => ({}) }) selectedOptionStyle!: Record<string, string>;
+  @Prop({ type: Boolean, default: true }) draggableOnOption!: boolean;
   startPoint: Point | null = null;
   endPoint: Point | null = null;
   /** mark as having triggered mousemove event. if true, prevent trigger click event */
@@ -57,6 +73,8 @@ export default class DragSelect extends Vue {
 
   controlKeyActive = false;
   shiftKeyActive = false;
+
+  plainSetSelectedOptionValues = false;
 
   /** calc drag area rect by startpoint and endpoint */
   get dragSelectAreaRect(): Rect | null {
@@ -86,8 +104,10 @@ export default class DragSelect extends Vue {
   set selectedOptionValues(newSelectedOptionValues) {
     const oldSelectedOptionValues = this.selectedOptionValues;
     let actualNewSelectedOptionValues: selectedOptionValue[];
-    /** originSelectedOptionValues was set on mouseDown event when controlKeyActive is true */
-    if (this.controlKeyActive && this.originSelectedOptionValues) {
+    if (this.plainSetSelectedOptionValues) {
+      actualNewSelectedOptionValues = Array.from(newSelectedOptionValues);
+    } else if (this.controlKeyActive && this.originSelectedOptionValues) {
+      /** originSelectedOptionValues was set on mouseDown event when controlKeyActive is true */
       const originSelectedOptionValues = this.originSelectedOptionValues;
       const unionOptionValues = new Set([...originSelectedOptionValues, ...newSelectedOptionValues]);
       const differenceValues: selectedOptionValue[] = [];
@@ -125,6 +145,44 @@ export default class DragSelect extends Vue {
 
     window.removeEventListener("keydown", this._handleKeyChange);
     window.removeEventListener("keyup", this._handleKeyChange);
+  }
+
+  @withPlainSetSelectedOptionValues
+  selectAll() {
+    this.selectedOptionValues = new Set(this.options.keys());
+  }
+
+  @withPlainSetSelectedOptionValues
+  selectOptions(optionValues: selectedOptionValues) {
+    const newSelectedOptionValues = new Set([...this.selectedOptionValues, ...optionValues]);
+    this.selectedOptionValues = newSelectedOptionValues;
+  }
+
+  @withPlainSetSelectedOptionValues
+  deselectOptions(optionValues: selectedOptionValues) {
+    const newSelectedOptionValues = new Set(this.selectedOptionValues);
+    for (const value of optionValues) {
+      if (newSelectedOptionValues.has(value)) {
+        newSelectedOptionValues.delete(value);
+      }
+    }
+    this.selectedOptionValues = newSelectedOptionValues;
+  }
+
+  @withPlainSetSelectedOptionValues
+  toggleOptions(optionValues: selectedOptionValues) {
+    const newSelectedOptionValues = new Set(this.selectedOptionValues);
+    for (const value of optionValues) {
+      if (this.options.has(value)) {
+        newSelectedOptionValues.has(value) ? newSelectedOptionValues.delete(value) : newSelectedOptionValues.add(value);
+      }
+    }
+    this.selectedOptionValues = newSelectedOptionValues;
+  }
+
+  @withPlainSetSelectedOptionValues
+  clearSelection() {
+    this.selectedOptionValues = new Set();
   }
 
   _getSelfRect() {
@@ -175,17 +233,21 @@ export default class DragSelect extends Vue {
   _onMousedown(e: MouseEvent) {
     // sometime the last state was not cleaned up
     this.cleanDrag();
+    this.dragged = false;
 
     if (!this._isMouseEventInClientArea(e)) {
       return;
     }
+    if (!this.draggableOnOption && this._getDragSelectOptionByMouseEvent(e)) {
+      return;
+    }
+
     this.startPoint = this._getCurrentPoint(e);
     this.autoScroll = new AutoScroll(this.contentRef);
     window.addEventListener("mousemove", this._onMousemove);
     window.addEventListener("mouseup", this._onMouseup);
     this._scrollableParent.addEventListener("scroll", this._onScrollableParentScroll);
 
-    this.dragged = false;
     if (this.controlKeyActive) {
       this.originSelectedOptionValues = new Set(this.selectedOptionValues);
     } else {

@@ -1,5 +1,5 @@
 <template>
-  <div :class="itemClass">
+  <div :class="itemClass" :style="itemStyle">
     <slot></slot>
   </div>
 </template>
@@ -18,9 +18,13 @@ export default class DragSelectOption extends Vue {
     return {
       "drag-select__option": true,
       "drag-select__option--selected": this.isSelected,
-      [this.dragSelect.SelecteditemClass]: this.isSelected,
+      [this.dragSelect.selectedOptionClass]: this.isSelected,
       [this.selectedClass]: this.isSelected,
     };
+  }
+
+  get itemStyle() {
+    return this.dragSelect.selectedOptionStyle;
   }
 
   get isSelected() {
