@@ -13,6 +13,7 @@ import { findScrollableParent } from "./_util/findScrollableParent";
 import { pairRectIntersect } from "./_util/pairRectIntersect";
 import { AutoScroll } from "./_util/autoScroll";
 import { getDocument } from "./_util/getDocument";
+import { setIsEqual } from "./_util/setIsEqual";
 import DragSelectOption from "./DragSelectOption.vue";
 import { VueElement } from "./_typings";
 
@@ -50,6 +51,12 @@ export default class DragSelect extends Vue {
   _scrollableParent!: HTMLElement;
   options: Map<selectedOptionValue, DragSelectOption> = new Map();
   optionRectCache: Map<selectedOptionValue, Rect> | null = null;
+
+  originSelectedOptionValues!: Set<selectedOptionValue>;
+
+  controlKeyActive = false;
+  shiftKeyActive = false;
+
   /** calc drag area rect by startpoint and endpoint */
   get dragSelectAreaRect(): Rect | null {
     if (!this.startPoint || !this.endPoint) return null;
@@ -83,27 +90,39 @@ export default class DragSelect extends Vue {
 
   set selectedOptionValues(newSelectedOptionValues) {
     const oldSelectedOptionValues = this.selectedOptionValues;
-    let needToUpdate;
-    const unionOptionValues = new Set([...oldSelectedOptionValues, ...newSelectedOptionValues]);
-    for (const value of unionOptionValues) {
-      if (oldSelectedOptionValues.has(value) !== newSelectedOptionValues.has(value)) {
-        needToUpdate = true;
-        break;
+    let actualNewSelectedOptionValues: selectedOptionValue[];
+
+    if (this.controlKeyActive) {
+      const originSelectedOptionValues = this.originSelectedOptionValues;
+      const unionOptionValues = new Set([...originSelectedOptionValues, ...newSelectedOptionValues]);
+      const differenceValues: selectedOptionValue[] = [];
+      for (const value of unionOptionValues) {
+        if (originSelectedOptionValues.has(value) !== newSelectedOptionValues.has(value)) {
+          differenceValues.push(value);
+        }
       }
+      actualNewSelectedOptionValues = differenceValues;
+    } else {
+      actualNewSelectedOptionValues = Array.from(newSelectedOptionValues);
     }
-    if (needToUpdate) {
-      this.$emit("change", Array.from(newSelectedOptionValues));
+    if (!setIsEqual(oldSelectedOptionValues, new Set(actualNewSelectedOptionValues))) {
+      this.$emit("change", actualNewSelectedOptionValues);
     }
   }
 
   mounted() {
     this._scrollableParent = findScrollableParent(this.contentRef) as HTMLElement;
+    window.addEventListener("keydown", this._handleKeyChange);
+    window.addEventListener("keyup", this._handleKeyChange);
   }
 
   beforeDestroy() {
     window.removeEventListener("mousemove", this._onMousemove);
     window.removeEventListener("mouseup", this._onMouseup);
     this._scrollableParent.removeEventListener("scroll", this._onScrollableParentScroll);
+
+    window.removeEventListener("keydown", this._handleKeyChange);
+    window.removeEventListener("keyup", this._handleKeyChange);
   }
 
   _getSelfRect() {
@@ -165,6 +184,7 @@ export default class DragSelect extends Vue {
     this._scrollableParent.addEventListener("scroll", this._onScrollableParentScroll);
 
     this.dragged = false;
+    this.originSelectedOptionValues = new Set(this.selectedOptionValues);
   }
 
   _onClick(e: MouseEvent) {
@@ -239,6 +259,11 @@ export default class DragSelect extends Vue {
     this._scrollableParent.removeEventListener("scroll", this._onScrollableParentScroll);
 
     this.optionRectCache = null;
+  }
+
+  _handleKeyChange(e: KeyboardEvent) {
+    this.controlKeyActive = e.ctrlKey || e.metaKey;
+    this.shiftKeyActive = e.shiftKey;
   }
 }
 </script>
