@@ -12,7 +12,6 @@ import { Vue, Component, Prop, Provide, Ref, Model } from "vue-property-decorato
 import { findScrollableParent } from "./_util/findScrollableParent";
 import { pairRectIntersect } from "./_util/pairRectIntersect";
 import { AutoScroll } from "./_util/autoScroll";
-import { getDocument } from "./_util/getDocument";
 import { setIsEqual } from "./_util/setIsEqual";
 import DragSelectOption from "./DragSelectOption.vue";
 import { VueElement } from "./_typings";
@@ -208,22 +207,17 @@ export default class DragSelect extends Vue {
    * avoid drag when mouseEvent trigger on border or scrollbar
    */
   _isMouseEventInClientArea(e: MouseEvent) {
-    const ownDocument = getDocument(this.contentRef);
-    const [pageScrollTop = 0, pageScrollLeft = 0] = [
-      ownDocument?.scrollingElement?.scrollTop,
-      ownDocument?.scrollingElement?.scrollLeft,
-    ];
     const el = this.contentRef;
 
     if (
-      e.clientX + pageScrollLeft < el.offsetLeft + el.clientLeft ||
-      e.clientX + pageScrollLeft > el.offsetLeft + el.clientLeft + el.clientWidth
+      e.clientX < el.getBoundingClientRect().left + el.clientLeft ||
+      e.clientX > el.getBoundingClientRect().left + el.clientLeft + el.clientWidth
     ) {
       return false;
     }
     if (
-      e.clientY + pageScrollTop < el.offsetTop + el.clientTop ||
-      e.clientY + pageScrollTop > el.offsetTop + el.clientTop + el.clientHeight
+      e.clientY < el.getBoundingClientRect().top + el.clientTop ||
+      e.clientY > el.getBoundingClientRect().top + el.clientTop + el.clientHeight
     ) {
       return false;
     }

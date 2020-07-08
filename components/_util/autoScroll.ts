@@ -1,13 +1,10 @@
-import type { Rect } from "../_typings/index";
 import { findScrollableParent } from "./findScrollableParent";
-import { getDocument } from "./getDocument";
 
 export class AutoScroll {
   scrollGutter: number;
   maxScrollVelocity: number;
   maxScrollSpacing: number;
   scrollableParent: HTMLElement | null;
-  scrollableParentRect: Rect | undefined;
   xScrollVelocity = 0;
   get needXScroll() {
     return this.xScrollVelocity !== 0;
@@ -23,12 +20,6 @@ export class AutoScroll {
     this.maxScrollSpacing = maxScrollSpacing;
     this.scrollableParent = findScrollableParent(scrollTargetElement);
     if (this.scrollableParent) {
-      this.scrollableParentRect = {
-        left: this.scrollableParent.offsetLeft + this.scrollableParent.clientLeft,
-        top: this.scrollableParent.offsetTop + this.scrollableParent.clientTop,
-        width: this.scrollableParent.clientWidth,
-        height: this.scrollableParent.clientHeight,
-      };
       window.addEventListener("mousemove", this._onMouseMove);
     }
   }
@@ -50,46 +41,41 @@ export class AutoScroll {
   };
 
   _computeScrollVelocity(e: MouseEvent) {
-    if (!this.scrollableParentRect) {
+    if (!this.scrollableParent) {
       this.xScrollVelocity = 0;
       this.yScrollVelocity = 0;
       return;
     }
+    const rect = this.scrollableParent.getBoundingClientRect();
     const scrollableEdge = {
-      top: this.scrollableParentRect.top + this.scrollGutter,
-      bottom: this.scrollableParentRect.top + this.scrollableParentRect.height - this.scrollGutter,
-      left: this.scrollableParentRect.left + this.scrollGutter,
-      right: this.scrollableParentRect.left + this.scrollableParentRect.width - this.scrollGutter,
+      top: rect.top + this.scrollGutter,
+      bottom: rect.top + this.scrollableParent.clientHeight - this.scrollGutter,
+      left: rect.left + this.scrollGutter,
+      right: rect.left + this.scrollableParent.clientWidth - this.scrollGutter,
     };
 
-    const ownDocument = getDocument(this.scrollableParent!);
-    const [pageScrollTop = 0, pageScrollLeft = 0] = [
-      ownDocument?.scrollingElement?.scrollTop,
-      ownDocument?.scrollingElement?.scrollLeft,
-    ];
-
-    if (e.clientY + pageScrollTop < scrollableEdge.top) {
+    if (e.clientY < scrollableEdge.top) {
       this.yScrollVelocity = -Math.min(
         this.maxScrollVelocity,
-        (this.maxScrollVelocity * -(e.clientY + pageScrollTop - scrollableEdge.top)) / this.maxScrollSpacing
+        (this.maxScrollVelocity * -(e.clientY - scrollableEdge.top)) / this.maxScrollSpacing
       );
-    } else if (e.clientY + pageScrollTop > scrollableEdge.bottom) {
+    } else if (e.clientY > scrollableEdge.bottom) {
       this.yScrollVelocity = Math.min(
         this.maxScrollVelocity,
-        (this.maxScrollVelocity * (e.clientY + pageScrollTop - scrollableEdge.bottom)) / this.maxScrollSpacing
+        (this.maxScrollVelocity * (e.clientY - scrollableEdge.bottom)) / this.maxScrollSpacing
       );
     } else {
       this.yScrollVelocity = 0;
     }
-    if (e.clientX + pageScrollLeft < scrollableEdge.left) {
+    if (e.clientX < scrollableEdge.left) {
       this.xScrollVelocity = -Math.min(
         this.maxScrollVelocity,
-        (this.maxScrollVelocity * -(e.clientX + pageScrollLeft - scrollableEdge.left)) / this.maxScrollSpacing
+        (this.maxScrollVelocity * -(e.clientX - scrollableEdge.left)) / this.maxScrollSpacing
       );
-    } else if (e.clientX + pageScrollLeft > scrollableEdge.right) {
+    } else if (e.clientX > scrollableEdge.right) {
       this.xScrollVelocity = Math.min(
         this.maxScrollVelocity,
-        (this.maxScrollVelocity * (e.clientX + pageScrollLeft - scrollableEdge.right)) / this.maxScrollSpacing
+        (this.maxScrollVelocity * (e.clientX - scrollableEdge.right)) / this.maxScrollSpacing
       );
     } else {
       this.xScrollVelocity = 0;
