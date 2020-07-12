@@ -16,6 +16,7 @@ import { setIsEqual } from "./_util/setIsEqual";
 import DragSelectOption from "./DragSelectOption.vue";
 import { VueElement } from "./_typings";
 import { createDecorator } from "vue-class-component";
+import { rafThrottle } from "./_util/rafThrottle";
 
 interface Point {
   x: number;
@@ -45,6 +46,20 @@ const withPlainSetSelectedOptionValues = createDecorator((options, key) => {
     this.plainSetSelectedOptionValues = false;
   };
 });
+
+const throttle = (propertyName: string, immediate = true) =>
+  createDecorator((options, key) => {
+    const originalMethod = options.methods![key];
+    const throttledMethod = rafThrottle(originalMethod, immediate);
+    // https://www.stephanboyer.com/post/132/what-are-covariance-and-contravariance
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    options.methods[key] = function wrapperMethod(...args) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (this as any)[propertyName] = throttledMethod;
+      throttledMethod.apply(this, args);
+    };
+  });
 
 @Component({ name: "DragSelect" })
 export default class DragSelect extends Vue {
@@ -96,6 +111,11 @@ export default class DragSelect extends Vue {
   shiftKeyActive = false;
 
   plainSetSelectedOptionValues = false;
+
+  /** defineed on _onMousemove method by using throttle decorator */
+  throttledMounsemoveHandler: ReturnType<typeof rafThrottle> | undefined;
+  /** defineed on _onScrollableParentScroll method by using throttle decorator */
+  throttledScrollHandler: ReturnType<typeof rafThrottle> | undefined;
 
   /** calc drag area rect by startpoint and endpoint */
   get dragSelectAreaRect(): Rect | null {
@@ -334,6 +354,7 @@ export default class DragSelect extends Vue {
     }
   }
 
+  @throttle("throttledMounsemoveHandler")
   _onMousemove(e: MouseEvent) {
     this._drag(e);
     e.preventDefault();
@@ -344,6 +365,7 @@ export default class DragSelect extends Vue {
     this.cleanDrag();
   }
 
+  @throttle("throttledScrollHandler")
   _onScrollableParentScroll(e: Event) {
     this._drag(e);
   }
@@ -359,12 +381,16 @@ export default class DragSelect extends Vue {
   }
 
   cleanDrag() {
+    window.removeEventListener("mousemove", this._onMousemove);
+    window.removeEventListener("mouseup", this._onMouseup);
+
+    this.throttledMounsemoveHandler?.cancel();
+    this.throttledScrollHandler?.cancel();
+
     this.startPoint = null;
     this.endPoint = null;
     this.autoScroll?.dispose();
 
-    window.removeEventListener("mousemove", this._onMousemove);
-    window.removeEventListener("mouseup", this._onMouseup);
     this._scrollableParent.removeEventListener("scroll", this._onScrollableParentScroll);
 
     this.optionRectCache = null;
