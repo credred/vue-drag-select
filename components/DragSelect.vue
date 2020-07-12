@@ -50,11 +50,29 @@ const withPlainSetSelectedOptionValues = createDecorator((options, key) => {
 export default class DragSelect extends Vue {
   @Ref("content") contentRef!: HTMLElement;
   @Provide() dragSelect = this;
+  /**
+   * selected option collection
+   */
   @Model("change", { required: true, default: [] }) value!: selectedOptionValue[];
+  /**
+   * the class names of drag area
+   */
   @Prop() dragAreaClass!: string;
+  /**
+   * the class styles drag area
+   */
   @Prop({ type: Object, default: () => ({}) }) dragAreaStyle!: Record<string, string>;
+  /**
+   * the class names of selected option
+   */
   @Prop({ default: "" }) selectedOptionClass!: string;
+  /**
+   * the selected styles of styles option
+   */
   @Prop({ type: Object, default: () => ({}) }) selectedOptionStyle!: Record<string, string>;
+  /**
+   * can draggable when dragstart event target on drag option
+   */
   @Prop({ type: Boolean, default: true }) draggableOnOption!: boolean;
   startPoint: Point | null = null;
   endPoint: Point | null = null;
@@ -146,17 +164,29 @@ export default class DragSelect extends Vue {
     window.removeEventListener("keyup", this._handleKeyChange);
   }
 
+  /**
+   * select all options
+   * @public
+   */
   @withPlainSetSelectedOptionValues
   selectAll() {
     this.selectedOptionValues = new Set(this.options.keys());
   }
 
+  /**
+   * select certain options
+   * @public
+   */
   @withPlainSetSelectedOptionValues
   selectOptions(optionValues: selectedOptionValues) {
     const newSelectedOptionValues = new Set([...this.selectedOptionValues, ...optionValues]);
     this.selectedOptionValues = newSelectedOptionValues;
   }
 
+  /**
+   * deselect certain options
+   * @public
+   */
   @withPlainSetSelectedOptionValues
   deselectOptions(optionValues: selectedOptionValues) {
     const newSelectedOptionValues = new Set(this.selectedOptionValues);
@@ -168,6 +198,10 @@ export default class DragSelect extends Vue {
     this.selectedOptionValues = newSelectedOptionValues;
   }
 
+  /**
+   * toggle select status of certain options
+   * @public
+   */
   @withPlainSetSelectedOptionValues
   toggleOptions(optionValues: selectedOptionValues) {
     const newSelectedOptionValues = new Set(this.selectedOptionValues);
@@ -179,9 +213,28 @@ export default class DragSelect extends Vue {
     this.selectedOptionValues = newSelectedOptionValues;
   }
 
+  /**
+   * clear current selection
+   * @public
+   */
   @withPlainSetSelectedOptionValues
   clearSelection() {
     this.selectedOptionValues = new Set();
+  }
+
+  /**
+   * reverse current selection
+   * @public
+   */
+  @withPlainSetSelectedOptionValues
+  reverseSelection() {
+    const newSelectedOptionValues = new Set<selectedOptionValue>();
+    for (const value of this.selectedOptionValues) {
+      if (!this.options.has(value)) {
+        newSelectedOptionValues.add(value);
+      }
+    }
+    this.selectedOptionValues = newSelectedOptionValues;
   }
 
   _getSelfRect() {

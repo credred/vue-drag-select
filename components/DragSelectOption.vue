@@ -11,7 +11,9 @@ import DragSelect, { selectedOptionValue } from "./DragSelect.vue";
 @Component({ name: "DragSelectOption" })
 export default class DragSelectOption extends Vue {
   @Inject() dragSelect!: DragSelect;
+  /** value of option */
   @Prop({ required: true }) value!: selectedOptionValue;
+  /** the class names of selected option */
   @Prop({ default: "" }) selectedClass!: string;
 
   get itemClass() {
