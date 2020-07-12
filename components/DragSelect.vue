@@ -1,6 +1,6 @@
 <template>
   <div class="drag-select__wrapper">
-    <div ref="content" class="drag-select" style="position: relative;" @mousedown="_onMousedown" @click="_onClick">
+    <div ref="content" class="drag-select" style="position: relative;">
       <slot></slot>
       <div class="drag-select__area" :class="dragAreaClass" :style="dragSelectAreaStyles"></div>
     </div>
@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Provide, Ref, Model } from "vue-property-decorator";
+import { Vue, Component, Prop, Provide, Ref, Model, Watch } from "vue-property-decorator";
 import { findScrollableParent } from "./_util/findScrollableParent";
 import { pairRectIntersect } from "./_util/pairRectIntersect";
 import { AutoScroll } from "./_util/autoScroll";
@@ -74,6 +74,10 @@ export default class DragSelect extends Vue {
    * can draggable when dragstart event target on drag option
    */
   @Prop({ type: Boolean, default: true }) draggableOnOption!: boolean;
+  /**
+   * whether DragSelect is disabled
+   */
+  @Prop({ type: Boolean, default: false }) disabled!: boolean;
   startPoint: Point | null = null;
   endPoint: Point | null = null;
   /** mark as having triggered mousemove event. if true, prevent trigger click event */
@@ -149,6 +153,20 @@ export default class DragSelect extends Vue {
     }
   }
 
+  @Watch("disabled", { immediate: true })
+  onDisabledChange() {
+    this.$nextTick(() => {
+      if (!this.disabled) {
+        this.contentRef.addEventListener("mousedown", this._onMousedown);
+        this.contentRef.addEventListener("click", this._onClick);
+      } else {
+        this.contentRef.removeEventListener("mousedown", this._onMousedown);
+        this.contentRef.removeEventListener("click", this._onClick);
+        this.cleanDrag();
+      }
+    });
+  }
+
   mounted() {
     this._scrollableParent = findScrollableParent(this.contentRef) as HTMLElement;
     window.addEventListener("keydown", this._handleKeyChange);
@@ -156,6 +174,9 @@ export default class DragSelect extends Vue {
   }
 
   beforeDestroy() {
+    this.contentRef.removeEventListener("mousedown", this._onMousedown);
+    this.contentRef.removeEventListener("click", this._onClick);
+
     window.removeEventListener("mousemove", this._onMousemove);
     window.removeEventListener("mouseup", this._onMouseup);
     this._scrollableParent.removeEventListener("scroll", this._onScrollableParentScroll);
@@ -374,25 +395,29 @@ export default class DragSelect extends Vue {
   _getSelectedOptionValuesByRect(rect: Rect) {
     const selectedOptionValues: Set<selectedOptionValue> = new Set();
     for (const [value, option] of this.options) {
-      if (!this.optionRectCache) {
-        this.optionRectCache = new Map();
-      }
-      if (!this.optionRectCache.has(value)) {
-        const optionEl = option.$el as HTMLElement;
-        this.optionRectCache.set(value, {
-          left: optionEl.offsetLeft,
-          top: optionEl.offsetTop,
-          width: optionEl.offsetWidth,
-          height: optionEl.offsetHeight,
-        });
-      }
-      const isPairRectIsIntersect = pairRectIntersect(rect, this.optionRectCache.get(value) as Rect);
+      this._addOptionRectCache(option);
+      const isPairRectIsIntersect = pairRectIntersect(rect, this.optionRectCache!.get(value) as Rect);
       if (isPairRectIsIntersect) {
         selectedOptionValues.add(value);
       }
     }
 
     return selectedOptionValues;
+  }
+
+  _addOptionRectCache(option: DragSelectOption) {
+    if (!this.optionRectCache) {
+      this.optionRectCache = new Map();
+    }
+    if (!this.optionRectCache.has(option.value)) {
+      const optionEl = option.$el as HTMLElement;
+      this.optionRectCache.set(option.value, {
+        left: optionEl.offsetLeft,
+        top: optionEl.offsetTop,
+        width: optionEl.offsetWidth,
+        height: optionEl.offsetHeight,
+      });
+    }
   }
 
   _handleKeyChange(e: KeyboardEvent) {
