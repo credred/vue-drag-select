@@ -225,6 +225,7 @@ export default class DragSelect extends Vue {
   }
 
   _onMousedown(e: MouseEvent) {
+    e.preventDefault();
     // sometime the last state was not cleaned up
     this.cleanDrag();
     this.dragged = false;
