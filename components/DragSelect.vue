@@ -197,12 +197,10 @@ export default class DragSelect extends Vue {
   }
 
   beforeDestroy() {
+    this.cleanDrag();
+
     this.contentRef.removeEventListener("mousedown", this._onMousedown);
     this.contentRef.removeEventListener("click", this._onClick);
-
-    window.removeEventListener("mousemove", this._onMousemove);
-    window.removeEventListener("mouseup", this._onMouseup);
-    this._scrollableParent.removeEventListener("scroll", this._onScrollableParentScroll);
 
     window.removeEventListener("keydown", this._handleKeyChange);
     window.removeEventListener("keyup", this._handleKeyChange);
