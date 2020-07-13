@@ -93,6 +93,10 @@ export default class DragSelect extends Vue {
    * whether DragSelect is disabled
    */
   @Prop({ type: Boolean, default: false }) disabled!: boolean;
+  /**
+   * background color of drag area, 'none' represent hide this style to avoid override background color of class
+   */
+  @Prop({ type: String, default: "rgba(66, 153, 225, 0.5)" }) background!: string;
   startPoint: Point | null = null;
   endPoint: Point | null = null;
   /** mark as having triggered mousemove event. if true, prevent trigger click event */
@@ -127,8 +131,10 @@ export default class DragSelect extends Vue {
   get dragSelectAreaStyles() {
     if (!this.dragSelectAreaRect) return { display: "none" };
     const { left, top, width, height } = this.dragSelectAreaRect;
+    const background = this.background === "none" ? {} : { background: this.background };
     return {
       position: "absolute",
+      ...background,
       ...this.dragAreaStyle,
       left: `${left}px`,
       top: `${top}px`,
