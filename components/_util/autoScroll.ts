@@ -21,26 +21,28 @@ export class AutoScroll {
     this.scrollableParent = findScrollableParent(scrollTargetElement);
     if (this.scrollableParent) {
       window.addEventListener("mousemove", this._onMouseMove);
+      window.addEventListener("touchmove", this._onMouseMove, { passive: false });
     }
   }
 
   public dispose() {
     window.removeEventListener("mousemove", this._onMouseMove);
+    window.removeEventListener("touchmove", this._onMouseMove, true);
     this.stopScroll();
   }
 
-  _onMouseMove = (e: MouseEvent) => {
-    this._computeScrollVelocity(e);
+  _onMouseMove = (e: MouseEvent | TouchEvent) => {
+    this._computeScrollVelocity(e instanceof TouchEvent ? e.touches[0] : e);
+    e.preventDefault();
+    e.stopPropagation();
     if (this.needXScroll || this.needYScroll) {
-      e.preventDefault();
-      e.stopPropagation();
       this.startScroll();
     } else {
       this.stopScroll();
     }
   };
 
-  _computeScrollVelocity(e: MouseEvent) {
+  _computeScrollVelocity(e: MouseEvent | Touch) {
     if (!this.scrollableParent) {
       this.xScrollVelocity = 0;
       this.yScrollVelocity = 0;

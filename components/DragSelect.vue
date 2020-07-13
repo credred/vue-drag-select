@@ -97,6 +97,8 @@ export default class DragSelect extends Vue {
   endPoint: Point | null = null;
   /** mark as having triggered mousemove event. if true, prevent trigger click event */
   dragged = false;
+  /** mark is touching */
+  _touching = false;
   lastMouseEvent!: MouseEvent;
   autoScroll!: AutoScroll;
 
@@ -178,9 +180,10 @@ export default class DragSelect extends Vue {
     this.$nextTick(() => {
       if (!this.disabled) {
         this.contentRef.addEventListener("mousedown", this._onMousedown);
+        this.contentRef.addEventListener("touchstart", this._onTouchStart);
         this.contentRef.addEventListener("click", this._onClick);
       } else {
-        this.contentRef.removeEventListener("mousedown", this._onMousedown);
+        this.contentRef.removeEventListener("touchstart", this._onTouchStart);
         this.contentRef.removeEventListener("click", this._onClick);
         this.cleanDrag();
       }
@@ -288,7 +291,7 @@ export default class DragSelect extends Vue {
     };
   }
 
-  _getCurrentPoint(e: MouseEvent) {
+  _getCurrentPoint(e: MouseEvent | Touch) {
     const { left, top, width, height } = this.contentRef.getBoundingClientRect();
 
     return {
@@ -300,7 +303,7 @@ export default class DragSelect extends Vue {
   /**
    * avoid drag when mouseEvent trigger on border or scrollbar
    */
-  _isMouseEventInClientArea(e: MouseEvent) {
+  _isMouseEventInClientArea(e: MouseEvent | Touch) {
     const el = this.contentRef;
 
     if (
@@ -317,9 +320,62 @@ export default class DragSelect extends Vue {
     }
     return true;
   }
-
+  //#region mouseEvent
   _onMousedown(e: MouseEvent) {
     e.preventDefault();
+    this._dragStart(e);
+    window.addEventListener("mousemove", this._onMousemove);
+    window.addEventListener("mouseup", this._onMouseup);
+  }
+
+  @throttle("throttledMounsemoveHandler")
+  _onMousemove(e: MouseEvent) {
+    this._drag(e);
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  _onMouseup() {
+    this.cleanDrag();
+  }
+  //#endregion
+
+  //#region touchEvent
+  _onTouchStart(e: TouchEvent) {
+    e.preventDefault();
+    this._touching = true;
+    this._dragStart(e.touches[0]);
+    window.addEventListener("touchmove", this._onTouchMove);
+    window.addEventListener("touchend", this._onTouchEnd);
+  }
+
+  @throttle("throttledMounsemoveHandler")
+  _onTouchMove(e: TouchEvent) {
+    this._touching && this._drag(e.touches[0]);
+  }
+
+  _onTouchEnd() {
+    this._touching = false;
+    this.cleanDrag();
+  }
+  //#endregion
+
+  _onClick(e: MouseEvent) {
+    if (this.dragged) {
+      return;
+    }
+    const eventTargetDragSelectOption = this._getDragSelectOptionByMouseEvent(e);
+    if (eventTargetDragSelectOption) {
+      this.selectedOptionValues = new Set([eventTargetDragSelectOption.value]);
+    }
+  }
+
+  @throttle("throttledScrollHandler")
+  _onScrollableParentScroll(e: Event) {
+    this._drag(e);
+  }
+
+  _dragStart(e: MouseEvent | Touch) {
     // sometime the last state was not cleaned up
     this.cleanDrag();
     this.dragged = false;
@@ -333,8 +389,6 @@ export default class DragSelect extends Vue {
 
     this.startPoint = this._getCurrentPoint(e);
     this.autoScroll = new AutoScroll(this.contentRef);
-    window.addEventListener("mousemove", this._onMousemove);
-    window.addEventListener("mouseup", this._onMouseup);
     this._scrollableParent.addEventListener("scroll", this._onScrollableParentScroll);
 
     if (this.controlKeyActive) {
@@ -344,33 +398,7 @@ export default class DragSelect extends Vue {
     }
   }
 
-  _onClick(e: MouseEvent) {
-    if (this.dragged) {
-      return;
-    }
-    const eventTargetDragSelectOption = this._getDragSelectOptionByMouseEvent(e);
-    if (eventTargetDragSelectOption) {
-      this.selectedOptionValues = new Set([eventTargetDragSelectOption.value]);
-    }
-  }
-
-  @throttle("throttledMounsemoveHandler")
-  _onMousemove(e: MouseEvent) {
-    this._drag(e);
-    e.preventDefault();
-    e.stopPropagation();
-  }
-
-  _onMouseup() {
-    this.cleanDrag();
-  }
-
-  @throttle("throttledScrollHandler")
-  _onScrollableParentScroll(e: Event) {
-    this._drag(e);
-  }
-
-  _drag(e: Event) {
+  _drag(e: Event | Touch) {
     this.dragged = true;
     if ((e as MouseWheelEvent).clientX !== undefined) {
       this.lastMouseEvent = e as MouseEvent;
@@ -380,9 +408,16 @@ export default class DragSelect extends Vue {
     this.selectedOptionValues = this._getSelectedOptionValuesByRect(this.dragSelectAreaRect!);
   }
 
+  _dragEnd() {
+    this.cleanDrag();
+  }
+
   cleanDrag() {
     window.removeEventListener("mousemove", this._onMousemove);
     window.removeEventListener("mouseup", this._onMouseup);
+
+    window.removeEventListener("touchmove", this._onTouchMove);
+    window.removeEventListener("touchend", this._onTouchEnd);
 
     this.throttledMounsemoveHandler?.cancel();
     this.throttledScrollHandler?.cancel();
@@ -396,7 +431,7 @@ export default class DragSelect extends Vue {
     this.optionRectCache = null;
   }
 
-  _getDragSelectOptionByMouseEvent(e: MouseEvent) {
+  _getDragSelectOptionByMouseEvent(e: MouseEvent | Touch) {
     let target = e.target;
     const optionElSet = new WeakSet(Array.from(this.options.values()).map((option) => option.$el));
     while (target instanceof Element && target !== this.contentRef) {
