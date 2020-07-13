@@ -74,19 +74,19 @@ export default class DragSelect extends Vue {
    */
   @Prop() dragAreaClass!: string;
   /**
-   * the class styles drag area
+   * the class styles of drag area
    */
   @Prop({ type: Object, default: () => ({}) }) dragAreaStyle!: Record<string, string>;
   /**
-   * the class names of selected option
+   * the class names of selected DragSelectOption
    */
   @Prop({ default: "" }) selectedOptionClass!: string;
   /**
-   * the selected styles of styles option
+   * the selected styles of selected DragSelectOption
    */
   @Prop({ type: Object, default: () => ({}) }) selectedOptionStyle!: Record<string, string>;
   /**
-   * can draggable when dragstart event target on drag option
+   * can draggable when dragstart event target on DragSelectOption
    */
   @Prop({ type: Boolean, default: true }) draggableOnOption!: boolean;
   /**
