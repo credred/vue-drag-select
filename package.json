@@ -1,0 +1,57 @@
+{
+  "name": "@coleqiu/vue-drag-select",
+  "version": "2.0.1",
+  "description": "Drag select component for Vue.js",
+  "keywords": [
+    "vue",
+    "vue3",
+    "drag",
+    "select"
+  ],
+  "files": [
+    "src",
+    "lib",
+    "tsconfig.json"
+  ],
+  "main": "./dist/vue-drag-select.umd.js",
+  "module": "./dist/vue-drag-select.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/vue-drag-select.es.js",
+      "require": "./dist/vue-drag-select.emd.js"
+    }
+  },
+  "homepage": "https://github.com/credred/vue-drag-select#readme",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build-typings": "vue-tsc --declaration --emitDeclarationOnly --outDir dist",
+    "build": "yarn build-typings && vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "@vueuse/core": "^7.1.2",
+    "vue": "^3.2.16"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.0.3",
+    "@types/node": "^16.11.12",
+    "@types/prettier": "^2.4.2",
+    "@typescript-eslint/eslint-plugin": "^5.6.0",
+    "@typescript-eslint/parser": "^5.6.0",
+    "@vitejs/plugin-vue": "^1.9.3",
+    "eslint": "^8.4.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-define-config": "^1.2.0",
+    "eslint-plugin-jest": "^25.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-vue": "^8.2.0",
+    "jest": "^27.4.4",
+    "prettier": "^2.5.1",
+    "ts-jest": "^27.1.1",
+    "typescript": "^4.5.2",
+    "vite": "^2.6.4",
+    "vue-eslint-parser": "^8.0.1",
+    "vue-tsc": "^0.29.8"
+  }
+}
