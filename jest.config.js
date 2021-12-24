@@ -3,9 +3,7 @@ module.exports = {
   preset: 'ts-jest',
   globals: {
     'ts-jest': {
-      tsconfig: {
-        sourceMap: true,
-      },
+      tsconfig: './tsconfig.test.json',
     },
   },
   testEnvironment: 'jsdom',

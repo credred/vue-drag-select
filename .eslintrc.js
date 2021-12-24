@@ -1,3 +1,5 @@
+// @ts-check
+const path = require('path');
 const { defineConfig } = require('eslint-define-config');
 /** @type {import("eslint-define-config").EslintConfig} */
 // @ts-expect-error The rule of eslintconfig accepts literal quantities such as "error", while the eslint recommended module is derived as a string type, resulting in TS error
@@ -14,7 +16,7 @@ module.exports = defineConfig({
     parser: '@typescript-eslint/parser',
     ecmaVersion: 2021,
     tsconfigRootDir: __dirname,
-    project: ['./tsconfig.json', './tsconfig.eslint.json'],
+    project: './tsconfig.json',
     extraFileExtensions: ['.vue'],
     ecmaFeatures: {
       jsx: true,
@@ -46,12 +48,16 @@ module.exports = defineConfig({
       files: ['*.vue'],
       rules: tsForEslintConfig.overrides[0].rules,
     },
-    // configuration file type is cjs，disable no-var-requires
     {
-      files: ['.eslintrc.js', '.prettierrc.js', 'vite.config.ts', 'jest.config.js', 'postcss.config.js'],
+      // @ts-expect-error eslint-define-config does missing type definition
+      parserOptions: {
+        project: './tsconfig.conf.json',
+      },
+      files: ['.eslintrc.js', '.prettierrc.js', 'vite.config.ts', 'jest.config.js'],
       env: {
         node: true,
       },
+      // configuration file type is cjs，disable no-var-requires
       rules: {
         '@typescript-eslint/no-var-requires': 'off',
         '@typescript-eslint/no-unsafe-assignment': 'off',
@@ -60,6 +66,11 @@ module.exports = defineConfig({
     {
       files: ['**/__tests__/**/*.{j,t}s?(x)'],
       extends: ['plugin:jest/style', 'plugin:jest/recommended'],
+      // @ts-expect-error eslint-define-config does missing type definition
+      parserOptions: {
+        tsconfigRootDir: path.relative(__dirname, '__tests__'),
+        project: './tsconfig.test.json',
+      },
       rules: {
         '@typescript-eslint/unbound-method': 'off',
         'jest/unbound-method': 'error',
