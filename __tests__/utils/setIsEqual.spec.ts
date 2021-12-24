@@ -1,4 +1,4 @@
-import { setIsEqual } from '../../src/utils/setIsEqual';
+import { setIsEqual } from '@/utils/setIsEqual';
 
 describe('setIsEqual', () => {
   test('setIsEqual', () => {

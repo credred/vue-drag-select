@@ -1,4 +1,4 @@
-import { toRect } from '../../src/utils/toRect';
+import { toRect } from '@/utils/toRect';
 
 describe('toRect', () => {
   test('toRect', () => {

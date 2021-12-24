@@ -1,5 +1,5 @@
-import { Rect } from '../../src/typings/internal';
-import { rectIsIntersect } from '../../src/utils/rectIsIntersect';
+import { Rect } from '@/typings/internal';
+import { rectIsIntersect } from '@/utils/rectIsIntersect';
 
 describe('rectIsIntersect', () => {
   test('rect is intersect', () => {

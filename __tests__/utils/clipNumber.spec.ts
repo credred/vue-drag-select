@@ -1,4 +1,4 @@
-import { clipNumber } from '../../src/utils/clipNumber';
+import { clipNumber } from '@/utils/clipNumber';
 
 describe('clipNumber', () => {
   test('number or edge', () => {
