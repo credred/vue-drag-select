@@ -68,7 +68,6 @@ module.exports = defineConfig({
       extends: ['plugin:jest/style', 'plugin:jest/recommended'],
       // @ts-expect-error eslint-define-config does missing type definition
       parserOptions: {
-        tsconfigRootDir: path.relative(__dirname, '__tests__'),
         project: './tsconfig.test.json',
       },
       rules: {
