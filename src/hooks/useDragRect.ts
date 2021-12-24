@@ -29,6 +29,7 @@ export function useDragRect(contentRef: Ref<HTMLElement | undefined>) {
       return {
         position: 'absolute',
         boxSizing: 'border-box',
+        touchAction: 'none',
         top: 0,
         left: 0,
         transform: `translate(${left}px, ${top}px)`,
