@@ -19,14 +19,13 @@ export function useDragPoints(target: Ref<HTMLElement | undefined>) {
   const stop = useDrag(target, {
     preventDefault: true,
     onStart(e) {
-      if (dragStatus.value !== 'end') return;
+      if (dragStatus.value !== 'end') return false;
       const targetDOM = unref(target);
-      if (targetDOM) {
-        const rect = targetDOM.getBoundingClientRect();
-        fromPoint.value = [e.clientX - rect.left, e.clientY - rect.top];
-        fromPosition.value = [e.pageX, e.pageY];
-        toPostion.value = [e.pageX, e.pageY];
-      }
+      if (!targetDOM) return false;
+      const rect = targetDOM.getBoundingClientRect();
+      fromPoint.value = [e.clientX - rect.left, e.clientY - rect.top];
+      fromPosition.value = [e.pageX, e.pageY];
+      toPostion.value = [e.pageX, e.pageY];
     },
     onMove(e) {
       dragStatus.value = 'ing';
