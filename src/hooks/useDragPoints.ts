@@ -9,11 +9,11 @@ export function useDragPoints(target: Ref<HTMLElement | undefined>) {
 
   // only working for single pointer
   const fromPoint = ref<Position>([0, 0]);
-  const fromClientPositon = ref<Position>([0, 0]);
-  const toClientPositon = ref<Position>([0, 0]);
+  const fromPosition = ref<Position>([0, 0]);
+  const toPostion = ref<Position>([0, 0]);
   const toPoint = computed<Position>(() => [
-    unref(toClientPositon)[0] - unref(fromClientPositon)[0] + unref(fromPoint)[0],
-    unref(toClientPositon)[1] - unref(fromClientPositon)[1] + unref(fromPoint)[1],
+    unref(toPostion)[0] - unref(fromPosition)[0] + unref(fromPoint)[0],
+    unref(toPostion)[1] - unref(fromPosition)[1] + unref(fromPoint)[1],
   ]);
 
   const stop = useDrag(target, {
@@ -23,20 +23,20 @@ export function useDragPoints(target: Ref<HTMLElement | undefined>) {
       const targetDOM = unref(target);
       if (targetDOM) {
         const rect = targetDOM.getBoundingClientRect();
-        fromPoint.value = [e.pageX - rect.left, e.pageY - rect.top];
-        fromClientPositon.value = [e.clientX, e.clientY];
-        toClientPositon.value = [e.clientX, e.clientY];
+        fromPoint.value = [e.clientX - rect.left, e.clientY - rect.top];
+        fromPosition.value = [e.pageX, e.pageY];
+        toPostion.value = [e.pageX, e.pageY];
       }
     },
     onMove(e) {
       dragStatus.value = 'ing';
-      toClientPositon.value = [e.clientX, e.clientY];
+      toPostion.value = [e.pageX, e.pageY];
     },
     onEnd() {
       dragStatus.value = 'end';
       fromPoint.value = [0, 0];
-      fromClientPositon.value = [0, 0];
-      toClientPositon.value = [0, 0];
+      fromPosition.value = [0, 0];
+      toPostion.value = [0, 0];
     },
   });
 
