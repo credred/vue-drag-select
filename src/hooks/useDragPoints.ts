@@ -4,7 +4,12 @@ import { useDrag, UseDragOptions } from './useDrag';
 
 type DragStatus = 'start' | 'ing' | 'end';
 
-type UseDragPointsOptions = Omit<UseDragOptions, 'preventDefault'>;
+interface UseDragPointsOptions extends Omit<UseDragOptions, 'preventDefault' | 'onStart'> {
+  /**
+   * Callback when the dragging starts. Return `false` to prevent dragging.
+   */
+  onStart?: (event: PointerEvent, fromPoint: Position) => void | false;
+}
 
 export function useDragPoints(target: Ref<HTMLElement | undefined>, options: UseDragPointsOptions = {}) {
   const dragStatus = ref<DragStatus>('end');
@@ -25,11 +30,12 @@ export function useDragPoints(target: Ref<HTMLElement | undefined>, options: Use
       if (dragStatus.value !== 'end') return false;
       const targetDOM = unref(target);
       if (!targetDOM) return false;
-      if (options.onStart?.(e) === false) {
+      const rect = targetDOM.getBoundingClientRect();
+      const _fromPoint: Position = [e.clientX - rect.left, e.clientY - rect.top];
+      if (options.onStart?.(e, _fromPoint) === false) {
         return false;
       }
-      const rect = targetDOM.getBoundingClientRect();
-      fromPoint.value = [e.clientX - rect.left, e.clientY - rect.top];
+      fromPoint.value = _fromPoint;
       fromPosition.value = [e.pageX, e.pageY];
       toPostion.value = [e.pageX, e.pageY];
     },
