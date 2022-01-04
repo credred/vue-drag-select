@@ -36,13 +36,16 @@ export function useDragPoints(target: Ref<HTMLElement | undefined>, options: Use
         return false;
       }
       fromPoint.value = _fromPoint;
-      fromPosition.value = [e.pageX, e.pageY];
-      toPostion.value = [e.pageX, e.pageY];
+      fromPosition.value = _fromPoint;
+      toPostion.value = _fromPoint;
     },
     onMove(e) {
       options.onMove?.(e);
       dragStatus.value = 'ing';
-      toPostion.value = [e.pageX, e.pageY];
+      const targetDOM = unref(target);
+      if (!targetDOM) return;
+      const rect = targetDOM.getBoundingClientRect();
+      toPostion.value = [e.clientX - rect.left, e.clientY - rect.top];
     },
     onEnd(e) {
       options.onEnd?.(e);
