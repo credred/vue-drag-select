@@ -1,5 +1,4 @@
 // @ts-check
-const path = require('path');
 const { defineConfig } = require('eslint-define-config');
 /** @type {import("eslint-define-config").EslintConfig} */
 // @ts-expect-error The rule of eslintconfig accepts literal quantities such as "error", while the eslint recommended module is derived as a string type, resulting in TS error
