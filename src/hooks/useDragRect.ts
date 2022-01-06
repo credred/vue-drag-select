@@ -1,10 +1,10 @@
 import { Ref, unref, computed, CSSProperties } from 'vue';
-import { MaybeRef, Position, Rect } from '../typings/internal';
+import { MaybeNullableRef, MaybeRef, Position, Rect } from '../typings/internal';
 import { clipNumber } from '../utils/clipNumber';
 import { toRect } from '../utils/toRect';
 import { useDragPoints } from './useDragPoints';
 
-function pointInRect(contentRef: Ref<HTMLElement | undefined>, pointRef: MaybeRef<Position>): boolean {
+function pointInRect(contentRef: MaybeNullableRef<HTMLElement | SVGElement>, pointRef: MaybeRef<Position>): boolean {
   const [content, [x, y]] = [unref(contentRef), unref(pointRef)];
   if (!content) {
     return false;

@@ -1,5 +1,5 @@
-import { ref, Ref, computed, unref } from 'vue';
-import { Position } from '../typings/internal';
+import { ref, computed, unref } from 'vue';
+import { MaybeNullableRef, Position } from '../typings/internal';
 import { useDrag, UseDragOptions } from './useDrag';
 
 type DragStatus = 'start' | 'ing' | 'end';
@@ -11,7 +11,7 @@ interface UseDragPointsOptions extends Omit<UseDragOptions, 'preventDefault' | '
   onStart?: (event: PointerEvent, fromPoint: Position) => void | false;
 }
 
-export function useDragPoints(target: Ref<HTMLElement | undefined>, options: UseDragPointsOptions = {}) {
+export function useDragPoints(target: MaybeNullableRef<HTMLElement | SVGElement>, options: UseDragPointsOptions = {}) {
   const dragStatus = ref<DragStatus>('end');
 
   // only working for single pointer
