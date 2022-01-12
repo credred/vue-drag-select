@@ -4,7 +4,7 @@ import { useDrag, UseDragOptions } from './useDrag';
 
 type DragStatus = 'start' | 'ing' | 'end';
 
-interface UseDragPointsOptions extends Omit<UseDragOptions, 'preventDefault' | 'onStart'> {
+export interface UseDragPointsOptions extends Omit<UseDragOptions, 'preventDefault' | 'onStart'> {
   /**
    * Callback when the dragging starts. Return `false` to prevent dragging.
    */

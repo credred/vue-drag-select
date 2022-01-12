@@ -2,7 +2,7 @@ import { unref, computed, CSSProperties } from 'vue';
 import { MaybeNullableRef, MaybeRef, Position, Rect } from '../typings/internal';
 import { clipNumber } from '../utils/clipNumber';
 import { toRect } from '../utils/toRect';
-import { useDragPoints } from './useDragPoints';
+import { useDragPoints, UseDragPointsOptions } from './useDragPoints';
 
 function pointInRect(contentRef: MaybeNullableRef<HTMLElement | SVGElement>, pointRef: MaybeRef<Position>): boolean {
   const [content, [x, y]] = [unref(contentRef), unref(pointRef)];
@@ -22,10 +22,21 @@ function limitPoint(contentRef: MaybeNullableRef<HTMLElement | SVGElement>, poin
   return [clipNumber(clientLeft + clientWidth, clientLeft, x), clipNumber(clientTop + clientHeight, clientTop, y)];
 }
 
-export function useDragRect(contentRef: MaybeNullableRef<HTMLElement | SVGElement>) {
+export interface UseDragRectOptions extends Omit<UseDragPointsOptions, 'onStart'> {
+  /**
+   * Callback when the dragging starts. Return `false` to prevent dragging.
+   */
+  onStart?: (event: PointerEvent) => void | false;
+}
+
+export function useDragRect(contentRef: MaybeNullableRef<HTMLElement | SVGElement>, options: UseDragRectOptions = {}) {
   const { fromPoint, toPoint, dragStatus, stop } = useDragPoints(contentRef, {
-    onStart(_, fromPoint) {
+    ...options,
+    onStart(e, fromPoint) {
       if (!pointInRect(contentRef, fromPoint)) {
+        return false;
+      }
+      if (options.onStart?.(e) === false) {
         return false;
       }
     },
