@@ -24,6 +24,10 @@ const optionClass = computed(() => ({
   'drag-select-option--selected': isSelected.value,
 }));
 
+const onClick = () => {
+  dragSelectAction?.onClick(option.value);
+};
+
 onMounted(() => {
   dragSelectAction?.add(option.value);
 
@@ -34,7 +38,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div ref="dragSelectOptionRef" :class="optionClass">
+  <div ref="dragSelectOptionRef" :class="optionClass" @click="onClick">
     <slot />
   </div>
 </template>

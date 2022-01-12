@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { computed, provide, ref, toRef, unref, watch } from 'vue';
+import { computed, provide, ref, toRef, unref } from 'vue';
 import { forOptionActionKey, Option } from './DragSelectCommon';
-import { useDragRect } from './hooks/useDragRect';
+import { useClickToSelect, useDragToSelect } from './DragSelectHook';
 import { MaybeRef } from './typings/internal';
-import { rectIsIntersect } from './utils/rectIsIntersect';
-import { setIsEqual } from './utils/setIsEqual';
 
 type ArrayOrSet<T = unknown> = Array<T> | Set<T>;
 
@@ -49,7 +47,7 @@ function useModelValue(modelValueRef: MaybeRef<ArrayOrSet>) {
   return { selectedOptions, emitModelValue };
 }
 
-function useOptions(selectedOptions: MaybeRef<Set<unknown>>) {
+function useOptions(selectedOptions: MaybeRef<Set<unknown>>, onClickToSelect: (option: Option) => void) {
   const options = new Set<Option>();
   provide(forOptionActionKey, {
     has(option: Option) {
@@ -64,37 +62,22 @@ function useOptions(selectedOptions: MaybeRef<Set<unknown>>) {
     delete(option: Option) {
       options.delete(option);
     },
+    onClick(option: Option) {
+      onClickToSelect(option);
+    },
   });
 
   return options;
 }
 
-const { selectedOptions: pSelectedOptions, emitModelValue } = useModelValue(toRef(props, 'modelValue'));
-const options = useOptions(pSelectedOptions);
+const { selectedOptions: currentSelectedOptions, emitModelValue: onChange } = useModelValue(toRef(props, 'modelValue'));
+const onClickToSelect = useClickToSelect({ currentSelectedOptions, onChange });
+
+const options = useOptions(currentSelectedOptions, onClickToSelect);
 
 const contentRef = ref<HTMLElement>();
 
-const { rect: areaRect, style: areaStyle } = useDragRect(contentRef);
-
-watch(areaRect, () => {
-  const newSelectedOptions = new Set();
-  if (!areaRect.value) return;
-  for (const { dom, value } of options) {
-    if (
-      rectIsIntersect(areaRect.value, {
-        left: dom.offsetLeft,
-        top: dom.offsetTop,
-        width: dom.clientWidth,
-        height: dom.clientHeight,
-      })
-    ) {
-      newSelectedOptions.add(value);
-    }
-  }
-  if (!setIsEqual(newSelectedOptions, pSelectedOptions.value)) {
-    emitModelValue(newSelectedOptions);
-  }
-});
+const areaStyle = useDragToSelect({ contentRef, options, currentSelectedOptions, onChange });
 </script>
 
 <template>

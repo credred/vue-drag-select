@@ -25,6 +25,7 @@ interface ForOptionAction {
   isSelected: (option: Option) => boolean;
   add: (option: Option) => void;
   delete: (option: Option) => void;
+  onClick: (option: Option) => void;
 }
 
 export const forOptionActionKey: InjectionKey<ForOptionAction> = Symbol();
