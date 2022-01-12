@@ -3,6 +3,7 @@ import { computed, provide, ref, toRef, unref } from 'vue';
 import { forOptionActionKey, Option } from './DragSelectCommon';
 import { useClickToSelect, useDragToSelect } from './DragSelectHook';
 import { MaybeRef } from './typings/internal';
+import { setIsEqual } from './utils/setIsEqual';
 
 type ArrayOrSet<T = unknown> = Array<T> | Set<T>;
 
@@ -70,19 +71,35 @@ function useOptions(selectedOptions: MaybeRef<Set<unknown>>, onClickToSelect: (o
   return options;
 }
 
-const { selectedOptions: currentSelectedOptions, emitModelValue: onChange } = useModelValue(toRef(props, 'modelValue'));
-const onClickToSelect = useClickToSelect({ currentSelectedOptions, onChange });
+const { selectedOptions: currentSelectedOptions, emitModelValue } = useModelValue(toRef(props, 'modelValue'));
+
+const onChange = (selectedOptions: Set<unknown>) => {
+  if (!setIsEqual(selectedOptions, unref(currentSelectedOptions))) {
+    emitModelValue(selectedOptions);
+  }
+};
+
+const isDisableClick = () => {
+  return !!dragged.value;
+};
+
+const onClickToSelect = useClickToSelect({ onChange, isDisableClick });
 
 const options = useOptions(currentSelectedOptions, onClickToSelect);
 
 const contentRef = ref<HTMLElement>();
 
-const areaStyle = useDragToSelect({ contentRef, options, currentSelectedOptions, onChange });
+const { areaStyle, dragged } = useDragToSelect({ contentRef, options, onChange });
+
+const onContentRefClick = () => {
+  if (isDisableClick()) return;
+  onChange(new Set());
+};
 </script>
 
 <template>
   <div class="drag-select__wrapper" style="position: relative">
-    <div ref="contentRef" class="drag-select">
+    <div ref="contentRef" class="drag-select" @click="onContentRefClick">
       <slot />
       <div class="drag-select__area" :style="areaStyle" />
     </div>

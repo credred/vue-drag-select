@@ -1,19 +1,25 @@
-import { watch, unref } from 'vue';
+import { watch, ref } from 'vue';
 import { Option } from './DragSelectCommon';
 import { useDragRect } from './hooks/useDragRect';
-import { MaybeNullableRef, MaybeRef } from './typings/internal';
+import { MaybeNullableRef } from './typings/internal';
 import { rectIsIntersect } from './utils/rectIsIntersect';
-import { setIsEqual } from './utils/setIsEqual';
 
 interface UseDragToSelectConfig {
   contentRef: MaybeNullableRef<HTMLElement>;
   options: Set<Option>;
-  currentSelectedOptions: MaybeRef<Set<unknown>>;
   onChange: (selectedOptions: Set<unknown>) => void;
 }
 
-export function useDragToSelect({ contentRef, options, currentSelectedOptions, onChange }: UseDragToSelectConfig) {
-  const { rect: areaRect, style: areaStyle } = useDragRect(contentRef);
+export function useDragToSelect({ contentRef, options, onChange }: UseDragToSelectConfig) {
+  const dragged = ref(false);
+  const { rect: areaRect, style: areaStyle } = useDragRect(contentRef, {
+    onStart() {
+      dragged.value = false;
+    },
+    onMove() {
+      dragged.value = true;
+    },
+  });
 
   watch(areaRect, () => {
     const newSelectedOptions = new Set();
@@ -30,25 +36,23 @@ export function useDragToSelect({ contentRef, options, currentSelectedOptions, o
         newSelectedOptions.add(value);
       }
     }
-    if (!setIsEqual(newSelectedOptions, unref(currentSelectedOptions))) {
-      onChange(newSelectedOptions);
-    }
+    onChange(newSelectedOptions);
   });
 
-  return areaStyle;
+  return { dragged, areaStyle };
 }
 
 interface UseClickToSelectConfig {
-  currentSelectedOptions: MaybeRef<Set<unknown>>;
   onChange: (selectedOptions: Set<unknown>) => void;
+  isDisableClick: () => boolean;
 }
 
-export function useClickToSelect({ currentSelectedOptions, onChange }: UseClickToSelectConfig) {
+export function useClickToSelect({ onChange, isDisableClick }: UseClickToSelectConfig) {
   const onClickToSelect = (option: Option) => {
+    if (isDisableClick()) return;
+
     const newSelectedOptions = new Set([option.value]);
-    if (!setIsEqual(newSelectedOptions, unref(currentSelectedOptions))) {
-      onChange(newSelectedOptions);
-    }
+    onChange(newSelectedOptions);
   };
 
   return onClickToSelect;

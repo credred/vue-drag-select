@@ -24,8 +24,9 @@ const optionClass = computed(() => ({
   'drag-select-option--selected': isSelected.value,
 }));
 
-const onClick = () => {
+const onClick = (e: MouseEvent) => {
   dragSelectAction?.onClick(option.value);
+  e.stopPropagation();
 };
 
 onMounted(() => {
