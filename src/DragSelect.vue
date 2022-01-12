@@ -78,18 +78,17 @@ const { rect: areaRect, style: areaStyle } = useDragRect(contentRef);
 
 watch(areaRect, () => {
   const newSelectedOptions = new Set();
-  if (areaRect.value) {
-    for (const { dom, value } of options) {
-      if (
-        rectIsIntersect(areaRect.value, {
-          left: dom.offsetLeft,
-          top: dom.offsetTop,
-          width: dom.clientWidth,
-          height: dom.clientHeight,
-        })
-      ) {
-        newSelectedOptions.add(value);
-      }
+  if (!areaRect.value) return;
+  for (const { dom, value } of options) {
+    if (
+      rectIsIntersect(areaRect.value, {
+        left: dom.offsetLeft,
+        top: dom.offsetTop,
+        width: dom.clientWidth,
+        height: dom.clientHeight,
+      })
+    ) {
+      newSelectedOptions.add(value);
     }
   }
   if (!setIsEqual(newSelectedOptions, pSelectedOptions.value)) {
