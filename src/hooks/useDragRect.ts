@@ -1,4 +1,4 @@
-import { Ref, unref, computed, CSSProperties } from 'vue';
+import { unref, computed, CSSProperties } from 'vue';
 import { MaybeNullableRef, MaybeRef, Position, Rect } from '../typings/internal';
 import { clipNumber } from '../utils/clipNumber';
 import { toRect } from '../utils/toRect';
@@ -13,7 +13,7 @@ function pointInRect(contentRef: MaybeNullableRef<HTMLElement | SVGElement>, poi
   return clientLeft < x && clientLeft + clientWidth > x && clientTop < y && clientTop + clientHeight > y;
 }
 
-function limitPoint(contentRef: Ref<HTMLElement | undefined>, pointRef: MaybeRef<Position>): Position {
+function limitPoint(contentRef: MaybeNullableRef<HTMLElement | SVGElement>, pointRef: MaybeRef<Position>): Position {
   const [content, [x, y]] = [unref(contentRef), unref(pointRef)];
   if (!content) {
     return [0, 0];
@@ -22,7 +22,7 @@ function limitPoint(contentRef: Ref<HTMLElement | undefined>, pointRef: MaybeRef
   return [clipNumber(clientLeft + clientWidth, clientLeft, x), clipNumber(clientTop + clientHeight, clientTop, y)];
 }
 
-export function useDragRect(contentRef: Ref<HTMLElement | undefined>) {
+export function useDragRect(contentRef: MaybeNullableRef<HTMLElement | SVGElement>) {
   const { fromPoint, toPoint, dragStatus, stop } = useDragPoints(contentRef, {
     onStart(_, fromPoint) {
       if (!pointInRect(contentRef, fromPoint)) {
