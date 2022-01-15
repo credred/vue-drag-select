@@ -71,11 +71,14 @@ export function useDrag(target: MaybeNullableRef<HTMLElement | SVGElement>, opti
 
     if (options.onStart?.(e) === false) return;
 
+    lastMouseEvent = e;
     stopPointermove = useEventListener(draggingElement, 'pointermove', move, true);
     stopPointerup = useEventListener(draggingElement, 'pointerup', end, true);
+    stopScroll = useEventListener(draggingElement, 'scroll', scroll, true);
     preventDefault(e);
   };
   const move = (e: PointerEvent) => {
+    lastMouseEvent = e;
     if (!filterEvent(e)) return;
 
     options.onMove?.(e);
@@ -89,17 +92,26 @@ export function useDrag(target: MaybeNullableRef<HTMLElement | SVGElement>, opti
 
     stopPointermove();
     stopPointerup();
+    stopScroll();
     preventDefault(e);
+  };
+
+  /** for scroll event */
+  let lastMouseEvent: PointerEvent;
+  const scroll = () => {
+    move(lastMouseEvent);
   };
 
   const stopPointerdown = useEventListener(target, 'pointerdown', start, true);
   let stopPointermove = noop;
   let stopPointerup = noop;
+  let stopScroll = noop;
 
   let stopImpl = () => {
     stopPointerdown();
     stopPointermove();
     stopPointerup();
+    stopScroll();
     stopImpl = noop;
   };
 
