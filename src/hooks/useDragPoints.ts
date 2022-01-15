@@ -31,7 +31,10 @@ export function useDragPoints(target: MaybeNullableRef<HTMLElement | SVGElement>
       const targetDOM = unref(target);
       if (!targetDOM) return false;
       const rect = targetDOM.getBoundingClientRect();
-      const _fromPoint: Position = [e.clientX - rect.left, e.clientY - rect.top];
+      const _fromPoint: Position = [
+        e.clientX - rect.left - targetDOM.clientLeft + targetDOM.scrollLeft,
+        e.clientY - rect.top - targetDOM.clientTop + targetDOM.scrollTop,
+      ];
       if (options.onStart?.(e, _fromPoint) === false) {
         return false;
       }
@@ -45,7 +48,10 @@ export function useDragPoints(target: MaybeNullableRef<HTMLElement | SVGElement>
       const targetDOM = unref(target);
       if (!targetDOM) return;
       const rect = targetDOM.getBoundingClientRect();
-      toPostion.value = [e.clientX - rect.left, e.clientY - rect.top];
+      toPostion.value = [
+        e.clientX - rect.left - targetDOM.clientLeft + targetDOM.scrollLeft,
+        e.clientY - rect.top - targetDOM.clientTop + targetDOM.scrollTop,
+      ];
     },
     onEnd(e) {
       options.onEnd?.(e);

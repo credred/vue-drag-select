@@ -9,8 +9,8 @@ function pointInRect(contentRef: MaybeNullableRef<HTMLElement | SVGElement>, poi
   if (!content) {
     return false;
   }
-  const { clientLeft, clientWidth, clientTop, clientHeight } = content;
-  return clientLeft < x && clientLeft + clientWidth > x && clientTop < y && clientTop + clientHeight > y;
+  const { clientLeft, scrollWidth, clientTop, scrollHeight } = content;
+  return 0 < x && clientLeft + scrollWidth > x && 0 < y && clientTop + scrollHeight > y;
 }
 
 function limitPoint(contentRef: MaybeNullableRef<HTMLElement | SVGElement>, pointRef: MaybeRef<Position>): Position {
@@ -18,8 +18,8 @@ function limitPoint(contentRef: MaybeNullableRef<HTMLElement | SVGElement>, poin
   if (!content) {
     return [0, 0];
   }
-  const { clientLeft, clientWidth, clientTop, clientHeight } = content;
-  return [clipNumber(clientLeft + clientWidth, clientLeft, x), clipNumber(clientTop + clientHeight, clientTop, y)];
+  const { scrollWidth, scrollHeight } = content;
+  return [clipNumber(scrollWidth, 0, x), clipNumber(scrollHeight, 0, y)];
 }
 
 export interface UseDragRectOptions extends Omit<UseDragPointsOptions, 'onStart'> {

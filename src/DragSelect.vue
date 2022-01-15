@@ -98,8 +98,8 @@ const onContentRefClick = () => {
 </script>
 
 <template>
-  <div class="drag-select__wrapper" style="position: relative">
-    <div ref="contentRef" class="drag-select" @click="onContentRefClick">
+  <div class="drag-select__wrapper">
+    <div ref="contentRef" class="drag-select" style="position: relative" @click="onContentRefClick">
       <slot />
       <div class="drag-select__area" :style="areaStyle" />
     </div>
