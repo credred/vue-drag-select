@@ -1,11 +1,12 @@
 import { InjectionKey } from 'vue';
+import { MaybeRef } from './typings/internal';
 
 export interface DragSelectProps<T = unknown> {
   /**
    * binding value
    * @alias v-model
    */
-  value?: T[];
+  modelValue?: MaybeRef<T>;
   /**
    * whether DragSelect is disabled
    * @default false

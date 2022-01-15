@@ -1,20 +1,23 @@
 <script setup lang="ts">
-import { computed, provide, ref, toRef, unref } from 'vue';
-import { forOptionActionKey, Option } from './DragSelectCommon';
+import { computed, provide, Ref, ref, toRef, unref } from 'vue';
+import { DragSelectProps, forOptionActionKey, Option } from './DragSelectCommon';
 import { useClickToSelect, useDragToSelect } from './DragSelectHook';
 import { MaybeRef } from './typings/internal';
 import { setIsEqual } from './utils/setIsEqual';
 
 type ArrayOrSet<T = unknown> = Array<T> | Set<T>;
 
-const props = defineProps({
+const _p = defineProps({
   /**
    * binding value
    * @alias v-model
    */
   modelValue: {
-    required: true,
-    type: Array || Set,
+    default: undefined,
+    validator(value) {
+      const plainValue = unref(value);
+      return plainValue === undefined || Array.isArray(plainValue) || plainValue instanceof Set;
+    },
   },
   /**
    * whether DragSelect is disabled
@@ -25,15 +28,17 @@ const props = defineProps({
     default: false,
   },
 });
+const props = _p as DragSelectProps<ArrayOrSet | undefined>;
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: ArrayOrSet): void;
   (event: 'change', value: ArrayOrSet): void;
 }>();
 
-function useModelValue(modelValueRef: MaybeRef<ArrayOrSet>) {
+function useModelValue(modelValueRef: Ref<ArrayOrSet | undefined>) {
+  const innerSelectedOptions: Ref<ArrayOrSet> = ref(new Set([]));
   const selectedOptions = computed(() => {
-    const modelValue = unref(modelValueRef);
+    const modelValue = unref(modelValueRef) || innerSelectedOptions.value;
     return Array.isArray(modelValue) ? new Set(modelValue) : modelValue;
   });
 
@@ -41,6 +46,7 @@ function useModelValue(modelValueRef: MaybeRef<ArrayOrSet>) {
     const formattedSelectedOptions = Array.isArray(unref(modelValueRef))
       ? Array.from(selectedOptions)
       : selectedOptions;
+    innerSelectedOptions.value = formattedSelectedOptions;
     emit('update:modelValue', formattedSelectedOptions);
     emit('change', formattedSelectedOptions);
   };
@@ -71,7 +77,9 @@ function useOptions(selectedOptions: MaybeRef<Set<unknown>>, onClickToSelect: (o
   return options;
 }
 
-const { selectedOptions: currentSelectedOptions, emitModelValue } = useModelValue(toRef(props, 'modelValue'));
+const { selectedOptions: currentSelectedOptions, emitModelValue } = useModelValue(
+  toRef(props, 'modelValue') as Ref<ArrayOrSet | undefined>
+);
 
 const onChange = (selectedOptions: Set<unknown>) => {
   if (!setIsEqual(selectedOptions, unref(currentSelectedOptions))) {
