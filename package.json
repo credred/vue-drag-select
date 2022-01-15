@@ -6,12 +6,12 @@
     "vue",
     "vue3",
     "drag",
-    "select"
+    "select",
+    "drag select"
   ],
   "files": [
     "src",
-    "lib",
-    "tsconfig.json"
+    "dist"
   ],
   "main": "./dist/vue-drag-select.umd.js",
   "module": "./dist/vue-drag-select.es.js",
@@ -26,13 +26,13 @@
   "scripts": {
     "dev": "vite",
     "build-typings": "vue-tsc --declaration --emitDeclarationOnly --outDir dist",
-    "build": "yarn build-typings && vite build",
+    "build": "vite build && yarn build-typings",
     "serve": "vite preview",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
-  "dependencies": {
-    "vue": "^3.2.16"
+  "peerDependencies": {
+    "vue": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.16.5",
@@ -62,6 +62,7 @@
     "vite": "^2.7.12",
     "vue-eslint-parser": "^8.0.1",
     "vue-loader": "^16.8.3",
-    "vue-tsc": "^0.29.8"
+    "vue-tsc": "^0.29.8",
+    "vue": "^3.2.16"
   }
 }
