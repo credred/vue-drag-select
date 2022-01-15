@@ -1,5 +1,5 @@
-import { Fn } from '@vueuse/core';
 import { getCurrentScope, onScopeDispose } from 'vue';
+import { Fn } from '../typings/internal';
 
 /**
  * copy form vueuse
