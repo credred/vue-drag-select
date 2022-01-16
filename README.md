@@ -32,7 +32,7 @@ const options = [ "item1", "item2", "item3" ];
 </script>
 
 <template>
-  <drag-select v-model="selection" drag>
+  <drag-select v-model="selection">
     <drag-select-option v-for="item in options" :value="item" :key="item">{{item}}</drag-select-option>
   </drag-select>
 </template>
@@ -50,8 +50,6 @@ const options = [ "item1", "item2", "item3" ];
   background: #5fdddc;
 }
 </style>
-
-</script>
 ```
 
 ## 📖Ducumentation
@@ -67,7 +65,7 @@ selectedOptionClass | the class names of selected DragSelectOption | string | --
 selectedOptionStyle | the selected styles of selected DragSelectOption | string | --
 <!-- disabled | whether DragSelect is disabled | boolean | false -->
 
-### DragSelect Methods
+<!-- ### DragSelect Methods
 Method | Description | Parameters
 -|-|-
 selectAll | select all options | --
@@ -75,7 +73,7 @@ selectOptions | select certain options | Array<string \| index>
 deselectOptions | deselect certain options | Array<string \| index>
 toggleOptions | toggle select status of certain options | Array<string \| index>
 clearSelection | clear current selection | --
-reverseSelection | reverse current selection | --
+reverseSelection | reverse current selection | -- -->
 
 ### DragSelectOption Attributes
 Attribute | Description | Type | Default
@@ -91,6 +89,6 @@ name | Description
 drag-select__wrapper | the className of DragSelect itself
 drag-select | the className of the container of dragSelectOption
 drag-select__area | the className of drag area
-drag-select__option | the className of dragSelectOption component
-drag-select__option--selected | the className of dragSelectOption component which are selected
-drag-select__option--disabled | the className of dragSelectOption component which are disabled
+drag-select-option | the className of dragSelectOption component
+drag-select-option--selected | the className of dragSelectOption component which are selected
+drag-select-option--disabled | the className of dragSelectOption component which are disabled
