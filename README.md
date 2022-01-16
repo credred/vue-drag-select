@@ -1,11 +1,96 @@
-# Vue 3 + Typescript + Vite
+# vue-drag-select
+A drag select component for Vue3
 
-This template should help get you started developing with Vue 3 and Typescript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## 🔧Installation
+```bash
+npm i @coleqiu/vue-drag-select
+```
 
-## Recommended IDE Setup
+```bash
+yarn add @coleqiu/vue-drag-select
+```
 
-- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
+## 📘Demo
+[Online Demo](https://credred.github.io/vue-drag-select/)
 
-## Type Support For `.vue` Imports in TS
+## 🧭Quick Guide
+### ⚙Import
+```javascript
+import Vue from "vue";
+import VueDragSelect from "@coleqiu/vue-drag-select";
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's `.vue` type support plugin by running `Volar: Switch TS Plugin on/off` from VSCode command palette.
+Vue.use(VueDragSelect);
+```
+
+### 🚀Usage
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+
+const selection = ref([]);
+const options = [ "item1", "item2", "item3" ];
+</script>
+
+<template>
+  <drag-select v-model="selection" drag>
+    <drag-select-option v-for="item in options" :value="item" :key="item">{{item}}</drag-select-option>
+  </drag-select>
+</template>
+
+<style>
+.drag-select-option {
+  width: 100px;
+  height: 100px;
+  color: #ffffff;
+  background: #E37E26;
+}
+
+.drag-select-option--selected {
+  color: #000000;
+  background: #5fdddc;
+}
+</style>
+
+</script>
+```
+
+## 📖Ducumentation
+### DragSelect Attributes
+Attribute | Description | Type | Default
+-|-|-|-
+modelValue / v-model | binding value | Array<string> \| Set<string \| number> | --(required)
+background | background color of drag area, 'none' represent hide this style to avoid override background color of class | string | rgba(66, 153, 225, 0.5 |
+draggableOnOption | can draggable when dragstart event target on DragSelectOption | boolean | true
+dragAreaClass | the class names of drag area | string | --
+dragAreaStyle | the class styles of drag area | string | --
+selectedOptionClass | the class names of selected DragSelectOption | string | --
+selectedOptionStyle | the selected styles of selected DragSelectOption | string | --
+<!-- disabled | whether DragSelect is disabled | boolean | false -->
+
+### DragSelect Methods
+Method | Description | Parameters
+-|-|-
+selectAll | select all options | --
+selectOptions | select certain options | Array<string \| index>
+deselectOptions | deselect certain options | Array<string \| index>
+toggleOptions | toggle select status of certain options | Array<string \| index>
+clearSelection | clear current selection | --
+reverseSelection | reverse current selection | --
+
+### DragSelectOption Attributes
+Attribute | Description | Type | Default
+-|-|-|-
+value | binding value | string \| index | --(required)
+disabled | whether DragSelectOption is disabled | boolean | false
+selectedClass | the class names of selected option | boolean | --
+
+### Component classNames
+this package havn't enough styles,you can use following classNames to add styles.
+name | Description
+-|-
+drag-select__wrapper | the className of DragSelect itself
+drag-select | the className of the container of dragSelectOption
+drag-select__area | the className of drag area
+drag-select__option | the className of dragSelectOption component
+drag-select__option--selected | the className of dragSelectOption component which are selected
+drag-select__option--disabled | the className of dragSelectOption component which are disabled
