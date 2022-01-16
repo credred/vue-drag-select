@@ -13,6 +13,9 @@ module.exports = {
   },
   async viteFinal(config) {
     config.plugins.push(require("@vitejs/plugin-vue-jsx")());
+    if (process.env.NODE_ENV === 'production') {
+      config.base = 'vue-drag-select';
+    }
     return config;
-  }
+  },
 }
