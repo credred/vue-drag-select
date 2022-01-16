@@ -102,7 +102,7 @@ export function useDrag(target: MaybeNullableRef<HTMLElement | SVGElement>, opti
     move(lastMouseEvent);
   };
 
-  const stopPointerdown = useEventListener(target, 'pointerdown', start, true);
+  const stopPointerdown = useEventListener(target, 'pointerdown', start);
   let stopPointermove = noop;
   let stopPointerup = noop;
   let stopScroll = noop;

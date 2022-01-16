@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, provide, Ref, ref, toRef, unref } from 'vue';
-import { DragSelectProps, forOptionActionKey, Option } from './DragSelectCommon';
+import { InnerDragSelectProps, forOptionActionKey, Option } from './DragSelectCommon';
 import { useClickToSelect, useDragToSelect } from './DragSelectHook';
 import { MaybeRef } from './typings/internal';
 import { setIsEqual } from './utils/setIsEqual';
@@ -20,6 +20,7 @@ const _p = defineProps({
     },
   },
   /**
+   * TODO
    * whether DragSelect is disabled
    * @default false
    */
@@ -27,8 +28,32 @@ const _p = defineProps({
     type: Boolean,
     default: false,
   },
+  draggableOnOption: {
+    type: Boolean,
+    default: true,
+  },
+  dragAreaClass: {
+    type: String,
+    default: '',
+  },
+  dragAreaStyle: {
+    type: Object,
+    default: () => ({}),
+  },
+  background: {
+    type: String,
+    default: 'rgba(66, 153, 225, 0.5)',
+  },
+  selectedOptionClass: {
+    type: String,
+    default: '',
+  },
+  selectedOptionStyle: {
+    type: Object,
+    default: () => ({}),
+  },
 });
-const props = _p as DragSelectProps<ArrayOrSet | undefined>;
+const props = _p as InnerDragSelectProps<ArrayOrSet | undefined>;
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: ArrayOrSet): void;
@@ -56,25 +81,48 @@ function useModelValue(modelValueRef: Ref<ArrayOrSet | undefined>) {
 
 function useOptions(selectedOptions: MaybeRef<Set<unknown>>, onClickToSelect: (option: Option) => void) {
   const options = new Set<Option>();
+  const clickedOnOption = ref(false);
+  const pointerDownedOnOption = ref(false);
   provide(forOptionActionKey, {
-    has(option: Option) {
-      return options.has(option);
+    selectedOptionClass: toRef(props, 'selectedOptionClass'),
+    has(option) {
+      return options.has(unref(option));
     },
     isSelected(option) {
-      return unref(selectedOptions).has(option.value);
+      return unref(selectedOptions).has(unref(option).value);
     },
-    add(option: Option) {
-      options.add(option);
+    add(option) {
+      options.add(unref(option));
     },
-    delete(option: Option) {
-      options.delete(option);
+    delete(option) {
+      options.delete(unref(option));
     },
-    onClick(option: Option) {
-      onClickToSelect(option);
+    onClick(option) {
+      onClickToSelect(unref(option));
+      clickedOnOption.value = true;
+    },
+    onPointerDown() {
+      pointerDownedOnOption.value = true;
     },
   });
 
-  return options;
+  const consumeClickedOnOption = () => {
+    try {
+      return clickedOnOption.value;
+    } finally {
+      clickedOnOption.value = false;
+    }
+  };
+
+  const consumePointerDownedOnOption = () => {
+    try {
+      return pointerDownedOnOption.value;
+    } finally {
+      pointerDownedOnOption.value = false;
+    }
+  };
+
+  return { options, consumeClickedOnOption, consumePointerDownedOnOption };
 }
 
 const { selectedOptions: currentSelectedOptions, emitModelValue } = useModelValue(
@@ -93,14 +141,29 @@ const isDisableClick = () => {
 
 const onClickToSelect = useClickToSelect({ onChange, isDisableClick });
 
-const options = useOptions(currentSelectedOptions, onClickToSelect);
+const { options, consumeClickedOnOption, consumePointerDownedOnOption } = useOptions(
+  currentSelectedOptions,
+  onClickToSelect
+);
 
 const contentRef = ref<HTMLElement>();
 
-const { areaStyle, dragged } = useDragToSelect({ contentRef, options, onChange });
+const { areaStyle: areaRectStyle, dragged } = useDragToSelect({
+  contentRef,
+  options,
+  onChange,
+  consumePointerDownedOnOption,
+  draggableOnOption: toRef(props, 'draggableOnOption'),
+});
+
+const areaStyle = computed(() => ({
+  background: props.background,
+  ...props.dragAreaStyle,
+  ...areaRectStyle.value,
+}));
 
 const onContentRefClick = () => {
-  if (isDisableClick()) return;
+  if (consumeClickedOnOption() || isDisableClick()) return;
   onChange(new Set());
 };
 </script>
@@ -109,7 +172,7 @@ const onContentRefClick = () => {
   <div class="drag-select__wrapper">
     <div ref="contentRef" class="drag-select" style="position: relative" @click="onContentRefClick">
       <slot />
-      <div class="drag-select__area" :style="areaStyle" />
+      <div class="drag-select__area" :class="props.dragAreaClass" :style="areaStyle" />
     </div>
   </div>
 </template>

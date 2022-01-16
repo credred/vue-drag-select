@@ -1,16 +1,28 @@
 <script setup lang="ts">
-import { onMounted, inject, ref, computed } from 'vue';
-import { forOptionActionKey, Option, OptionValue } from './DragSelectCommon';
+import { onMounted, inject, ref, computed, watch, unref } from 'vue';
+import { forOptionActionKey, Option } from './DragSelectCommon';
 
-const props = defineProps<{
-  value: OptionValue;
-}>();
+const props = defineProps({
+  value: {
+    required: true,
+    type: null,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  selectedClass: {
+    type: String,
+    default: '',
+  },
+});
 
 const dragSelectOptionRef = ref<HTMLElement>();
 
 const option = computed<Option>(() => ({
   dom: dragSelectOptionRef.value as HTMLElement,
   value: props.value,
+  disabled: props.disabled,
 }));
 
 const dragSelectAction = inject(forOptionActionKey);
@@ -22,24 +34,43 @@ const isSelected = computed(() => {
 const optionClass = computed(() => ({
   'drag-select-option': true,
   'drag-select-option--selected': isSelected.value,
+  'drag-select-option--disabled': props.disabled,
+  ...(dragSelectAction ? { [unref(dragSelectAction.selectedOptionClass)]: isSelected.value } : {}),
+  [props.selectedClass]: isSelected.value,
 }));
 
-const onClick = (e: MouseEvent) => {
+const onClick = () => {
   dragSelectAction?.onClick(option.value);
-  e.stopPropagation();
+};
+
+const onPointerDown = () => {
+  dragSelectAction?.onPointerDown();
 };
 
 onMounted(() => {
-  dragSelectAction?.add(option.value);
+  const stop = watch(
+    () => props.disabled,
+    (disabled) => {
+      if (disabled) {
+        dragSelectAction?.delete(option);
+      } else {
+        dragSelectAction?.add(option);
+      }
+    },
+    {
+      immediate: true,
+    }
+  );
 
   return () => {
-    dragSelectAction?.delete(option.value);
+    stop();
+    dragSelectAction?.delete(option);
   };
 });
 </script>
 
 <template>
-  <div ref="dragSelectOptionRef" :class="optionClass" @click="onClick">
+  <div ref="dragSelectOptionRef" :class="optionClass" @click="onClick" @pointerdown="onPointerDown">
     <slot />
   </div>
 </template>
