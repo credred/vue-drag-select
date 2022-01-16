@@ -9,7 +9,9 @@ export default {
   component: DragSelect,
   // More on argTypes: https://storybook.js.org/docs/vue/api/argtypes
   argTypes: {
-    modelValue: {}
+    modelValue: {},
+    background: { control: 'color', defaultValue: 'rgba(66, 153, 225, 0.5)' },
+    draggableOnOption: { control: 'boolean', defaultValue: true },
   },
 };
 
