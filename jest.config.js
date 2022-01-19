@@ -9,6 +9,7 @@ module.exports = {
       tsconfig: './tsconfig.test.json',
     },
   },
+  setupFilesAfterEnv: ['./scripts/setupJestEnv.ts'],
   moduleNameMapper: pathsToModuleNameMapper(tsconfig.compilerOptions.paths, { prefix: '<rootDir>/' }),
   testEnvironment: 'jsdom',
   testMatch: ['<rootDir>/__tests__/**/?*.spec.[jt]s?(x)'],

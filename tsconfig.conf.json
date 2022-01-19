@@ -1,4 +1,7 @@
 {
   "extends": "./tsconfig.base.json",
-  "include": [".eslintrc.js", ".prettierrc.js", "vite.config.ts", "jest.config.js"]
+  "compilerOptions": {
+    "lib": ["dom"]
+  },
+  "include": [".eslintrc.js", ".prettierrc.js", "vite.config.ts", "jest.config.js", "scripts/*"]
 }

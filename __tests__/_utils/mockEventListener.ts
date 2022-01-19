@@ -1,6 +1,6 @@
 import { afterTest } from './afterTest';
 
-export function createEventListener(target: HTMLElement | Document) {
+export function createEventListener(target: HTMLElement | Document | Window) {
   // use 'as' statement reason:
   // typescript can't recognize right type when we calling target.addEventListener("mousedown", ...)
   target = target as HTMLElement;

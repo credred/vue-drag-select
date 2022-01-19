@@ -3,6 +3,7 @@ const { defineConfig } = require('eslint-define-config');
 /** @type {import("eslint-define-config").EslintConfig} */
 // @ts-expect-error The rule of eslintconfig accepts literal quantities such as "error", while the eslint recommended module is derived as a string type, resulting in TS error
 const tsForEslintConfig = require('@typescript-eslint/eslint-plugin/dist/configs/eslint-recommended');
+const tsconfigConf = require('./tsconfig.conf.json');
 
 module.exports = defineConfig({
   root: true,
@@ -52,7 +53,7 @@ module.exports = defineConfig({
       parserOptions: {
         project: './tsconfig.conf.json',
       },
-      files: ['.eslintrc.js', '.prettierrc.js', 'vite.config.ts', 'jest.config.js'],
+      files: tsconfigConf.include,
       env: {
         node: true,
       },
