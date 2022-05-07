@@ -11,15 +11,18 @@ yarn add @coleqiu/vue-drag-select
 ```
 
 ## 📘Demo
-[Online Demo](https://credred.github.io/vue-drag-select/)
+[Storybook](https://credred.github.io/vue-drag-select/)
+
+[![Edit vue-drag-select-example](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/vue-drag-select-example-3d0cof?fontsize=14&hidenavigation=1&theme=dark)
 
 ## 🧭Quick Guide
 ### ⚙Import
 ```javascript
-import Vue from "vue";
+import { createApp } from "vue";
 import VueDragSelect from "@coleqiu/vue-drag-select";
 
-Vue.use(VueDragSelect);
+const app = createApp(App);
+app.use(VueDragSelect);
 ```
 
 ### 🚀Usage
