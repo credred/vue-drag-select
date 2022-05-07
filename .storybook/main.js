@@ -9,7 +9,7 @@ module.exports = {
   ],
   "framework": "@storybook/vue3",
   "core": {
-    "builder": "storybook-builder-vite"
+    "builder": "@storybook/builder-vite"
   },
   async viteFinal(config) {
     config.plugins.push(require("@vitejs/plugin-vue-jsx")());
