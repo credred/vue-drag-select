@@ -1,33 +1,33 @@
 import { ref, nextTick, effectScope, Ref } from 'vue';
 import { useEventListener } from '@/hooks/useEventListener';
-import { mockFn } from '../_utils/mockFn';
 import { createEventListener } from '../_utils/mockEventListener';
 import { randomStr } from '../_utils/randomStr';
 
 describe('useEventListener', () => {
-  test('basic usage', () => {
+  it('basic usage', () => {
     const el = document.createElement('div');
-    useEventListener(el, 'mousedown', mockFn, true);
+    const handler = jasmine.createSpy();
+    useEventListener(el, 'mousedown', handler, true);
 
     el.dispatchEvent(new MouseEvent('mousedown'));
 
-    expect(mockFn).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenCalledTimes(1);
   });
 
-  test('should cleanup after stop callback was called', () => {
+  it('should cleanup after stop callback was called', () => {
     const el = document.createElement('div');
-    const stop = useEventListener(el, 'mousedown', jest.fn());
+    const stop = useEventListener(el, 'mousedown', jasmine.createSpy());
     const { removeEventListener } = createEventListener(el);
     expect(removeEventListener).toHaveBeenCalledTimes(0);
     stop();
     expect(removeEventListener).toHaveBeenCalled();
   });
 
-  test('should pass argument to addEventListener/removeEventListener', () => {
+  it('should pass argument to addEventListener/removeEventListener', () => {
     const el = document.createElement('div');
     const { addEventListener, removeEventListener } = createEventListener(el);
 
-    const args = [randomStr(), jest.fn(), {}] as const;
+    const args = [randomStr(), jasmine.createSpy(), {}] as const;
 
     const stop = useEventListener(el, ...args);
     expect(addEventListener).toHaveBeenCalledWith(...args);
@@ -35,18 +35,18 @@ describe('useEventListener', () => {
     expect(removeEventListener).toHaveBeenCalledWith(...args);
   });
 
-  test('target maybe is ref', () => {
+  it('target maybe is ref', () => {
     const el = document.createElement('div');
     const { addEventListener } = createEventListener(el);
-    useEventListener(ref(el), 'mousedown', jest.fn());
+    useEventListener(ref(el), 'mousedown', jasmine.createSpy());
     expect(addEventListener).toHaveBeenCalled();
   });
 
-  test('should watch target change', async () => {
+  it('should watch target change', async () => {
     const el = document.createElement('div');
     const newEl = document.createElement('div');
     const elRef = ref<HTMLElement>(el) as Ref<HTMLElement>;
-    useEventListener(elRef, 'mousedown', jest.fn());
+    useEventListener(elRef, 'mousedown', jasmine.createSpy());
     const { removeEventListener } = createEventListener(el);
     const { addEventListener } = createEventListener(newEl);
     elRef.value = newEl;
@@ -55,29 +55,29 @@ describe('useEventListener', () => {
     expect(addEventListener).toHaveBeenCalled();
   });
 
-  test('should do nothing after target change to undefined', () => {
+  it('should do nothing after target change to undefined', () => {
     expect(() => {
       const el = document.createElement('div');
       const elRef = ref<HTMLElement | undefined>(el);
-      useEventListener(elRef, 'mousedown', jest.fn());
+      useEventListener(elRef, 'mousedown', jasmine.createSpy());
       elRef.value = undefined;
     }).not.toThrow();
   });
 
-  test('should cleanup after the scope was destroyed', () => {
+  it('should cleanup after the scope was destroyed', () => {
     const el = document.createElement('div');
     const scope = effectScope();
     scope.run(() => {
-      useEventListener(el, 'mousedown', jest.fn());
+      useEventListener(el, 'mousedown', jasmine.createSpy());
     });
     const { removeEventListener } = createEventListener(el);
     scope.stop();
     expect(removeEventListener).toHaveBeenCalled();
   });
 
-  test('should not cleanup again after call stop callback again', () => {
+  it('should not cleanup again after call stop callback again', () => {
     const el = document.createElement('div');
-    const stop = useEventListener(el, 'mousedown', jest.fn());
+    const stop = useEventListener(el, 'mousedown', jasmine.createSpy());
     const { removeEventListener } = createEventListener(el);
     stop();
     expect(removeEventListener).toHaveBeenCalledTimes(1);

@@ -1,7 +1,7 @@
 import { toRect } from '@/utils/toRect';
 
 describe('toRect', () => {
-  test('toRect', () => {
+  it('toRect', () => {
     expect(toRect([10, 10], [50, 50])).toEqual({
       left: 10,
       top: 10,

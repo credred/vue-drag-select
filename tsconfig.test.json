@@ -2,7 +2,6 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "types": ["vite/client", "jest"],
     "paths": {
       "@/*": ["src/*"]
     }

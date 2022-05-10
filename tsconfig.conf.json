@@ -3,5 +3,5 @@
   "compilerOptions": {
     "lib": ["dom"]
   },
-  "include": [".eslintrc.js", ".prettierrc.js", "vite.config.ts", "jest.config.js", "scripts/*"]
+  "include": [".eslintrc.js", ".prettierrc.js", "vite.config.ts", "karma.conf.js", "scripts/*"]
 }

@@ -1,23 +1,31 @@
 import { useDrag } from '@/hooks/useDrag';
+import { strictEq } from '../_utils/asymmetricMatch';
 import { createEventListener } from '../_utils/mockEventListener';
 
+const createPointerEvent = (type: string, eventInitDict?: PointerEventInit) => {
+  return new PointerEvent(type, {
+    isPrimary: true,
+    ...eventInitDict,
+  });
+}
+
 describe('hooks/useDrag', () => {
-  test('should trigger onStart callback after pointerdown event was triggered', () => {
+  it('should trigger onStart callback after pointerdown event was triggered', () => {
     const el = document.createElement('div');
-    const handler = jest.fn();
+    const handler = jasmine.createSpy();
 
     useDrag(el, {
       onStart: handler,
     });
 
-    el.dispatchEvent(new PointerEvent('pointerdown'));
+    el.dispatchEvent(createPointerEvent('pointerdown'));
 
     expect(handler).toHaveBeenCalled();
   });
 
-  test('should not register any event listener when onStart callback return false', () => {
+  it('should not register any event listener when onStart callback return false', () => {
     const el = document.createElement('div');
-    const handler = jest.fn().mockReturnValue(false);
+    const handler = jasmine.createSpy().and.returnValue(false);
 
     useDrag(el, {
       onStart: handler,
@@ -25,67 +33,66 @@ describe('hooks/useDrag', () => {
 
     const { addEventListener } = createEventListener(window);
 
-    el.dispatchEvent(new PointerEvent('pointerdown'));
+    el.dispatchEvent(createPointerEvent('pointerdown'));
     expect(addEventListener).not.toHaveBeenCalled();
 
-    handler.mockReturnValue(true);
-    el.dispatchEvent(new PointerEvent('pointerdown'));
+    handler.and.returnValue(true);
+    el.dispatchEvent(createPointerEvent('pointerdown'));
     expect(addEventListener).toHaveBeenCalled();
   });
 
-  test('should trigger onMove callback after pointerdown event was triggered and then pointermove event was triggered', () => {
+  it('should trigger onMove callback after pointerdown event was triggered and then pointermove event was triggered', () => {
     const el = document.createElement('div');
-    const handler = jest.fn();
+    const handler = jasmine.createSpy();
 
     useDrag(el, {
       onMove: handler,
     });
 
-    window.dispatchEvent(new PointerEvent('pointermove'));
+    window.dispatchEvent(createPointerEvent('pointermove'));
     expect(handler).not.toHaveBeenCalled();
 
-    el.dispatchEvent(new PointerEvent('pointerdown'));
-    window.dispatchEvent(new PointerEvent('pointermove'));
+    el.dispatchEvent(createPointerEvent('pointerdown'));
+    window.dispatchEvent(createPointerEvent('pointermove'));
     expect(handler).toHaveBeenCalled();
   });
 
-  test('should trigger onMove callback after scroll event was triggered', () => {
+  it('should trigger onMove callback after scroll event was triggered', () => {
     const el = document.createElement('div');
-    const handler = jest.fn();
+    const handler = jasmine.createSpy();
 
     useDrag(el, {
       onMove: handler,
     });
 
-    window.dispatchEvent(new PointerEvent('scroll'));
+    window.dispatchEvent(createPointerEvent('scroll'));
     expect(handler).not.toHaveBeenCalled();
 
-    el.dispatchEvent(new PointerEvent('pointerdown'));
-    window.dispatchEvent(new PointerEvent('scroll'));
+    el.dispatchEvent(createPointerEvent('pointerdown'));
+    window.dispatchEvent(createPointerEvent('scroll'));
     expect(handler).toHaveBeenCalled();
   });
 
-  test('should trigger onEnd callback after pointerup event was triggered', () => {
+  it('should trigger onEnd callback after pointerup event was triggered', () => {
     const el = document.createElement('div');
-    const handler = jest.fn();
-
+    const handler = jasmine.createSpy();
     useDrag(el, {
       onEnd: handler,
     });
 
-    window.dispatchEvent(new PointerEvent('pointerup'));
+    window.dispatchEvent(createPointerEvent('pointerup'));
     expect(handler).not.toHaveBeenCalled();
 
-    el.dispatchEvent(new PointerEvent('pointerdown'));
-    window.dispatchEvent(new PointerEvent('pointerup'));
+    el.dispatchEvent(createPointerEvent('pointerdown'));
+    window.dispatchEvent(createPointerEvent('pointerup'));
     expect(handler).toHaveBeenCalled();
   });
 
-  test('should not trigger any event when the received pointer event type is not primary', () => {
+  it('should not trigger any event when the received pointer event type is not primary', () => {
     const el = document.createElement('div');
-    const startHandler = jest.fn();
-    const moveHandler = jest.fn();
-    const endHandler = jest.fn();
+    const startHandler = jasmine.createSpy();
+    const moveHandler = jasmine.createSpy();
+    const endHandler = jasmine.createSpy();
 
     useDrag(el, {
       onStart: startHandler,
@@ -93,61 +100,62 @@ describe('hooks/useDrag', () => {
       onEnd: endHandler,
     });
 
-    el.dispatchEvent(new PointerEvent('pointerdown', { isPrimary: false }));
+    el.dispatchEvent(createPointerEvent('pointerdown', { isPrimary: false }));
     expect(startHandler).not.toHaveBeenCalled();
 
-    el.dispatchEvent(new PointerEvent('pointerdown', { isPrimary: true }));
+    el.dispatchEvent(createPointerEvent('pointerdown', { isPrimary: true }));
     expect(startHandler).toHaveBeenCalled();
 
-    el.dispatchEvent(new PointerEvent('pointermove', { isPrimary: false }));
+    el.dispatchEvent(createPointerEvent('pointermove', { isPrimary: false }));
     expect(moveHandler).not.toHaveBeenCalled();
-    el.dispatchEvent(new PointerEvent('pointerup', { isPrimary: false }));
+    el.dispatchEvent(createPointerEvent('pointerup', { isPrimary: false }));
     expect(endHandler).not.toHaveBeenCalled();
   });
 
-  test('should trigger onMove callback with last PointerEvent after scroll event was triggered', () => {
+  it('should trigger onMove callback with last PointerEvent after scroll event was triggered', () => {
     const el = document.createElement('div');
-    const handler = jest.fn();
+    const handler = jasmine.createSpy();
 
     useDrag(el, {
       onMove: handler,
     });
 
-    let lastEvent = new PointerEvent('pointerdown');
+    let lastEvent = createPointerEvent('pointerdown');
 
     el.dispatchEvent(lastEvent);
     window.dispatchEvent(new Event('scroll'));
-    expect(handler).toHaveBeenCalledWith(lastEvent);
+    expect(handler).toHaveBeenCalledWith(strictEq(lastEvent));
 
-    lastEvent = new PointerEvent('pointermove');
+    lastEvent = createPointerEvent('pointermove');
+    window.dispatchEvent(lastEvent);
     window.dispatchEvent(new Event('scroll'));
-    expect(handler).toHaveBeenCalledWith(lastEvent);
+    expect(handler).toHaveBeenCalledWith(strictEq(lastEvent));
 
-    lastEvent = new PointerEvent('pointermove');
+    lastEvent = createPointerEvent('pointermove');
+    window.dispatchEvent(lastEvent);
     window.dispatchEvent(new Event('scroll'));
-    expect(handler).toHaveBeenCalledWith(lastEvent);
+    expect(handler).toHaveBeenCalledWith(strictEq(lastEvent));
   });
 
-  test('should not trigger onMove callback with the PointerEvent which not trigger onMove callback after scroll event was triggered', () => {
+  it('should not trigger onMove callback with the PointerEvent which not trigger onMove callback after scroll event was triggered', () => {
     const el = document.createElement('div');
-    const handler = jest.fn();
-
+    const handler = jasmine.createSpy();
     useDrag(el, {
       onMove: handler,
     });
-
-    const pointerdownEvent = new PointerEvent('pointerdown');
-
+    const pointerdownEvent = createPointerEvent('pointerdown');
     el.dispatchEvent(pointerdownEvent);
     window.dispatchEvent(new Event('scroll'));
+    expect(handler).toHaveBeenCalledWith(strictEq(pointerdownEvent));
 
-    expect(handler).toHaveBeenCalledWith(pointerdownEvent);
-    const notPrimaryEvent = new PointerEvent('pointermove', { isPrimary: false });
+    const notPrimaryEvent = createPointerEvent('pointermove', { isPrimary: false });
+    window.dispatchEvent(notPrimaryEvent);
     window.dispatchEvent(new Event('scroll'));
-    expect(handler).not.toHaveBeenCalledWith(notPrimaryEvent);
+    expect(handler).not.toHaveBeenCalledWith(strictEq(notPrimaryEvent));
 
-    const primaryEvent = new PointerEvent('pointermove');
+    const primaryEvent = createPointerEvent('pointermove');
+    window.dispatchEvent(primaryEvent);
     window.dispatchEvent(new Event('scroll'));
-    expect(handler).toHaveBeenCalledWith(primaryEvent);
+    expect(handler).toHaveBeenCalledWith(strictEq(primaryEvent));
   });
 });

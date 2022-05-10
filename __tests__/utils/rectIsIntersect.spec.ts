@@ -2,7 +2,7 @@ import { Rect } from '@/typings/internal';
 import { rectIsIntersect } from '@/utils/rectIsIntersect';
 
 describe('rectIsIntersect', () => {
-  test('rect is intersect', () => {
+  it('rect is intersect', () => {
     const rectA: Rect = {
       left: 500,
       top: 600,
@@ -19,7 +19,7 @@ describe('rectIsIntersect', () => {
     expect(rectIsIntersect(rectA, rectB)).toBeTruthy();
   });
 
-  test("rect isn't intersect", () => {
+  it("rect isn't intersect", () => {
     const rectA: Rect = {
       left: 100,
       top: 200,
@@ -36,7 +36,7 @@ describe('rectIsIntersect', () => {
     expect(rectIsIntersect(rectA, rectB)).toBeFalsy();
   });
 
-  test('a rect contain an other rect is intersect', () => {
+  it('a rect contain an other rect is intersect', () => {
     const rectA: Rect = {
       left: 100,
       top: 100,
@@ -53,7 +53,7 @@ describe('rectIsIntersect', () => {
     expect(rectIsIntersect(rectA, rectB)).toBeTruthy();
   });
 
-  test('the edge contact of tow rect is intersect', () => {
+  it('the edge contact of tow rect is intersect', () => {
     const rectA: Rect = {
       left: 100,
       top: 100,
