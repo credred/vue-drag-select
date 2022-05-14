@@ -13,6 +13,12 @@ module.exports = function (config) {
     reporters: ['spec'],
     files: [
       {
+        pattern: '__tests__/_setup/normalize.css',
+        type: 'css',
+        watched: true,
+        served: true,
+      },
+      {
         pattern: '__tests__/**/*.spec.ts',
         type: 'module',
         watched: false,
@@ -25,6 +31,8 @@ module.exports = function (config) {
           alias: {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             '@': path.resolve(__dirname, './src'),
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            '@test': path.resolve(__dirname, './__tests__'),
           },
         },
       },
