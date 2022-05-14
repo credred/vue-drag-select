@@ -10,7 +10,7 @@ function pointInRect(contentRef: MaybeNullableRef<HTMLElement | SVGElement>, poi
     return false;
   }
   const { clientLeft, scrollWidth, clientTop, scrollHeight } = content;
-  return 0 < x && clientLeft + scrollWidth > x && 0 < y && clientTop + scrollHeight > y;
+  return 0 <= x && clientLeft + scrollWidth >= x && 0 <= y && clientTop + scrollHeight >= y;
 }
 
 function limitPoint(contentRef: MaybeNullableRef<HTMLElement | SVGElement>, pointRef: MaybeRef<Position>): Position {
