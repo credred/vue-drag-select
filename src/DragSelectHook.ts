@@ -19,20 +19,16 @@ export function useDragToSelect({
   draggableOnOption,
   consumePointerDownedOnOption,
 }: UseDragToSelectConfig) {
-  const dragged = ref(false);
   const {
     rect: areaRect,
     style: areaStyle,
+    isDragging,
     stop,
   } = useDragRect(contentRef, {
     onStart() {
-      dragged.value = false;
       if (!unref(draggableOnOption) && consumePointerDownedOnOption()) {
         return false;
       }
-    },
-    onMove() {
-      dragged.value = true;
     },
   });
 
@@ -55,7 +51,7 @@ export function useDragToSelect({
     onChange(newSelectedOptions);
   });
 
-  return { dragged, areaStyle, stop };
+  return { isDragging, areaStyle, stop };
 }
 
 interface UseClickToSelectConfig {

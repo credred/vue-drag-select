@@ -137,7 +137,7 @@ const onChange = (selectedOptions: Set<unknown>) => {
 };
 
 const isDisableClick = () => {
-  return !!dragged.value;
+  return !!isDragging.value;
 };
 
 const onClickToSelect = useClickToSelect({ onChange, isDisableClick });
@@ -149,7 +149,7 @@ const { options, consumeClickedOnOption, consumePointerDownedOnOption } = useOpt
 
 const contentRef = ref<HTMLElement>();
 
-const { areaStyle: areaRectStyle, dragged } = useDragToSelect({
+const { areaStyle: areaRectStyle, isDragging } = useDragToSelect({
   contentRef,
   options,
   onChange,

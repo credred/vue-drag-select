@@ -2,8 +2,6 @@ import { ref, computed, unref } from 'vue';
 import { MaybeNullableRef, Position } from '../typings/internal';
 import { useDrag, UseDragOptions } from './useDrag';
 
-type DragStatus = 'start' | 'ing' | 'end';
-
 export interface UseDragPointsOptions extends Omit<UseDragOptions, 'preventDefault' | 'onStart'> {
   /**
    * Callback when the dragging starts. Return `false` to prevent dragging.
@@ -12,7 +10,7 @@ export interface UseDragPointsOptions extends Omit<UseDragOptions, 'preventDefau
 }
 
 export function useDragPoints(target: MaybeNullableRef<HTMLElement | SVGElement>, options: UseDragPointsOptions = {}) {
-  const dragStatus = ref<DragStatus>('end');
+  const isDragging = ref(false);
 
   // only working for single pointer
   const fromPoint = ref<Position>([0, 0]);
@@ -27,9 +25,10 @@ export function useDragPoints(target: MaybeNullableRef<HTMLElement | SVGElement>
     ...options,
     preventDefault: true,
     onStart(e) {
-      if (dragStatus.value !== 'end') return false;
+      if (isDragging.value) return false;
       const targetDOM = unref(target);
       if (!targetDOM) return false;
+      isDragging.value = true;
       const rect = targetDOM.getBoundingClientRect();
       const _fromPoint: Position = [
         e.clientX - rect.left - targetDOM.clientLeft + targetDOM.scrollLeft,
@@ -44,7 +43,6 @@ export function useDragPoints(target: MaybeNullableRef<HTMLElement | SVGElement>
     },
     onMove(e) {
       options.onMove?.(e);
-      dragStatus.value = 'ing';
       const targetDOM = unref(target);
       if (!targetDOM) return;
       const rect = targetDOM.getBoundingClientRect();
@@ -55,12 +53,12 @@ export function useDragPoints(target: MaybeNullableRef<HTMLElement | SVGElement>
     },
     onEnd(e) {
       options.onEnd?.(e);
-      dragStatus.value = 'end';
+      isDragging.value = false;
       fromPoint.value = [0, 0];
       fromPosition.value = [0, 0];
       toPostion.value = [0, 0];
     },
   });
 
-  return { fromPoint, toPoint, dragStatus, stop };
+  return { fromPoint, toPoint, isDragging, stop };
 }

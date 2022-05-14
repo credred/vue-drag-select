@@ -30,7 +30,7 @@ export interface UseDragRectOptions extends Omit<UseDragPointsOptions, 'onStart'
 }
 
 export function useDragRect(contentRef: MaybeNullableRef<HTMLElement | SVGElement>, options: UseDragRectOptions = {}) {
-  const { fromPoint, toPoint, dragStatus, stop } = useDragPoints(contentRef, {
+  const { fromPoint, toPoint, isDragging, stop } = useDragPoints(contentRef, {
     ...options,
     onStart(e, fromPoint) {
       if (!pointInRect(contentRef, fromPoint)) {
@@ -43,7 +43,7 @@ export function useDragRect(contentRef: MaybeNullableRef<HTMLElement | SVGElemen
   });
 
   const rect = computed<Rect | undefined>(() => {
-    if (dragStatus.value === 'ing') {
+    if (isDragging.value) {
       return toRect(unref(fromPoint), limitPoint(contentRef, toPoint));
     } else {
       return undefined;
@@ -51,7 +51,7 @@ export function useDragRect(contentRef: MaybeNullableRef<HTMLElement | SVGElemen
   });
 
   const style = computed<CSSProperties>(() => {
-    if (dragStatus.value === 'ing' && rect.value) {
+    if (isDragging.value && rect.value) {
       const { left, top, width, height } = rect.value;
       return {
         position: 'absolute',
@@ -70,5 +70,5 @@ export function useDragRect(contentRef: MaybeNullableRef<HTMLElement | SVGElemen
     }
   });
 
-  return { fromPoint, toPoint, style, rect, dragStatus, stop };
+  return { fromPoint, toPoint, style, rect, isDragging, stop };
 }
