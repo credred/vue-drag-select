@@ -1,4 +1,4 @@
-import { ref, computed, unref } from 'vue';
+import { ref, unref } from 'vue';
 import { MaybeNullableRef, Position } from '../typings/internal';
 import { useDrag, UseDragOptions } from './useDrag';
 
@@ -14,12 +14,7 @@ export function useDragPoints(target: MaybeNullableRef<HTMLElement | SVGElement>
 
   // only working for single pointer
   const fromPoint = ref<Position>([0, 0]);
-  const fromPosition = ref<Position>([0, 0]);
-  const toPostion = ref<Position>([0, 0]);
-  const toPoint = computed<Position>(() => [
-    unref(toPostion)[0] - unref(fromPosition)[0] + unref(fromPoint)[0],
-    unref(toPostion)[1] - unref(fromPosition)[1] + unref(fromPoint)[1],
-  ]);
+  const toPoint = ref<Position>([0, 0]);
 
   const stop = useDrag(target, {
     ...options,
@@ -38,25 +33,23 @@ export function useDragPoints(target: MaybeNullableRef<HTMLElement | SVGElement>
         return false;
       }
       fromPoint.value = _fromPoint;
-      fromPosition.value = _fromPoint;
-      toPostion.value = _fromPoint;
+      toPoint.value = _fromPoint;
     },
     onMove(e) {
-      options.onMove?.(e);
       const targetDOM = unref(target);
       if (!targetDOM) return;
       const rect = targetDOM.getBoundingClientRect();
-      toPostion.value = [
+      toPoint.value = [
         e.clientX - rect.left - targetDOM.clientLeft + targetDOM.scrollLeft,
         e.clientY - rect.top - targetDOM.clientTop + targetDOM.scrollTop,
       ];
+      options.onMove?.(e);
     },
     onEnd(e) {
-      options.onEnd?.(e);
       isDragging.value = false;
       fromPoint.value = [0, 0];
-      fromPosition.value = [0, 0];
-      toPostion.value = [0, 0];
+      toPoint.value = [0, 0];
+      options.onEnd?.(e);
     },
   });
 
