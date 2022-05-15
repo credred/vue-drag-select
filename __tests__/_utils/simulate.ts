@@ -1,22 +1,6 @@
 import { Position } from '@/typings/internal';
 import userEvent from '@testing-library/user-event';
 
-function pointerPress(name: 'pointerdown' | 'pointerup', x: number, y: number) {
-  return userEvent.pointer({
-    keyDef: {
-      name,
-      pointerType: 'mouse',
-    },
-    target: document.elementFromPoint(x, y) || document.documentElement,
-    releaseSelf: false,
-    releasePrevious: false,
-    coords: {
-      x,
-      y,
-    },
-  });
-}
-
 export function pointerMove(x: number, y: number) {
   return userEvent.pointer({
     target: document.elementFromPoint(x, y) || document.documentElement,
@@ -28,11 +12,34 @@ export function pointerMove(x: number, y: number) {
   });
 }
 
-export function pointerdown(x: number, y: number) {
-  return pointerPress('pointerdown', x, y);
-}
-export function pointerup(x: number, y: number) {
-  return pointerPress('pointerup', x, y);
+export async function pointerdown(x: number, y: number) {
+  const user = userEvent.setup();
+  const keyDef = {
+    name: 'pointerdown',
+    pointerType: 'mouse',
+  } as const;
+  await user.pointer({
+    keyDef,
+    target: document.elementFromPoint(x, y) || document.documentElement,
+    releaseSelf: false,
+    releasePrevious: false,
+    coords: {
+      x,
+      y,
+    },
+  });
+
+  return function pointerup(x: number, y: number) {
+    return user.pointer({
+      keyDef,
+      target: document.elementFromPoint(x, y) || document.documentElement,
+      releasePrevious: true,
+      coords: {
+        x,
+        y,
+      },
+    })
+  }
 }
 
 interface DragOption {
@@ -63,7 +70,7 @@ async function slideMove(from: Position, to: Position, option: DragOption) {
 
 export async function drag(from: Position, to: Position, option: DragOption) {
   option.onBeforeStart?.();
-  await pointerdown(...from);
+  const pointerup = await pointerdown(...from);
   option.onStart?.();
   await slideMove(from, to, option);
   option.onBeforeEnd?.();
