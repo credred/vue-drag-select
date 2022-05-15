@@ -1,3 +1,6 @@
+import { Position } from '@/typings/internal';
+import { subtraction } from '@test/_utils/math';
+
 export let el!: HTMLDivElement;
 
 export const elBox = {
@@ -13,12 +16,35 @@ export const elBox = {
   scrollHeight: 300,
   get validArea() {
     const rect = el.getBoundingClientRect();
+    const top = rect.top + el.clientTop;
+    const right = rect.left + rect.width - el.clientLeft;
+    const bottom = rect.top + rect.height - el.clientTop;
+    const left = rect.left + el.clientLeft;
+    const relativeTop = 0;
+    const relativeRight = this.width;
+    const relativeBottom = this.height;
+    const relativeLeft = 0;
+    const fromPoint: Position = [left, top];
+    const toPoint: Position = [right, bottom];
+    const relativeFromPoint: Position = [0, 0];
+    const relativeToPoint: Position = subtraction(toPoint, fromPoint);
     return {
-      top: rect.top + el.clientTop,
-      right: rect.left + rect.width - el.clientLeft,
-      bottom: rect.top + rect.height - el.clientTop,
-      left: rect.left + el.clientLeft,
+      top,
+      right,
+      bottom,
+      left,
+      from: fromPoint,
+      to: toPoint,
+      relativeTop,
+      relativeRight,
+      relativeBottom,
+      relativeLeft,
+      relativeFrom: relativeFromPoint,
+      relativeTo: relativeToPoint,
     };
+  },
+  relative(pos: Position): Position {
+    return subtraction(pos, [elBox.validArea.left, elBox.validArea.top]);
   }
 };
 
