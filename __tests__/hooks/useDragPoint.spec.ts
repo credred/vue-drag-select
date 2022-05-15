@@ -1,6 +1,6 @@
 import { useDragPoints } from '@/hooks/useDragPoints';
 import { el, elBox, makeContainerScrollable, setupContainer } from '@test/_setup/setupContainer';
-import { drag } from '@test/_utils/simulate';
+import { drag, pointerdown } from '@test/_utils/simulate';
 import { addition } from '@test/_utils/math';
 
 describe('hooks/useDragPoint', () => {
@@ -34,4 +34,14 @@ describe('hooks/useDragPoint', () => {
       },
     });
   });
+
+  it('should not start dragging is options.onStart method return false', async () => {
+    const { fromPoint, toPoint, isDragging } = useDragPoints(el, {
+      onStart: () => false,
+    });
+    await pointerdown(...elBox.validArea.from);
+    expect(isDragging.value).toBe(false);
+    expect(fromPoint.value).toEqual([0, 0]);
+    expect(toPoint.value).toEqual([0, 0]);
+  })
 });

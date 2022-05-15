@@ -23,7 +23,6 @@ export function useDragPoints(target: MaybeNullableRef<HTMLElement | SVGElement>
       if (isDragging.value) return false;
       const targetDOM = unref(target);
       if (!targetDOM) return false;
-      isDragging.value = true;
       const rect = targetDOM.getBoundingClientRect();
       const _fromPoint: Position = [
         e.clientX - rect.left - targetDOM.clientLeft + targetDOM.scrollLeft,
@@ -32,6 +31,7 @@ export function useDragPoints(target: MaybeNullableRef<HTMLElement | SVGElement>
       if (options.onStart?.(e, _fromPoint) === false) {
         return false;
       }
+      isDragging.value = true;
       fromPoint.value = _fromPoint;
       toPoint.value = _fromPoint;
     },
