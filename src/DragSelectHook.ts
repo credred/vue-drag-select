@@ -1,7 +1,8 @@
 import { watch, ref, unref } from 'vue';
 import { Option } from './DragSelectCommon';
 import { useDragRect } from './hooks/useDragRect';
-import { MaybeNullableRef, MaybeRef } from './typings/internal';
+import { usePointAutoScroll } from './hooks/useAutoScroll';
+import { MaybeNullableRef, MaybeRef, Position } from './typings/internal';
 import { rectIsIntersect } from './utils/rectIsIntersect';
 
 interface UseDragToSelectConfig {
@@ -19,18 +20,28 @@ export function useDragToSelect({
   draggableOnOption,
   consumePointerDownedOnOption,
 }: UseDragToSelectConfig) {
+  const pointPosition = ref<Position>([0, 0]);
   const {
     rect: areaRect,
     style: areaStyle,
     isDragging,
     stop,
   } = useDragRect(contentRef, {
-    onStart() {
+    onStart(e) {
       if (!unref(draggableOnOption) && consumePointerDownedOnOption()) {
         return false;
       }
+      pointPosition.value = [e.clientX, e.clientY];
+    },
+    onMove(e) {
+      // cursor may be not moved
+      if (e.clientX !== pointPosition.value[0] || e.clientY !== pointPosition.value[1]) {
+        pointPosition.value = [e.clientX, e.clientY];
+      }
     },
   });
+
+  usePointAutoScroll(contentRef, isDragging, pointPosition);
 
   watch(areaRect, () => {
     const newSelectedOptions = new Set();
