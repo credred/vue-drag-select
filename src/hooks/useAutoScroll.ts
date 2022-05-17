@@ -1,5 +1,6 @@
 import { Ref, unref, watchEffect } from 'vue';
 import { MaybeNullableRef, Position } from '../typings/internal';
+import doesElementScrolledTotally from '../utils/doesElementScrolledTotally';
 import { findScrollableParent } from '../utils/findScrollableParent';
 import { noop } from '../utils/noop';
 import rafInterval from '../utils/rafInterval';
@@ -12,17 +13,6 @@ interface AutoScrollOption {
   // minimum distance moved in one second
   minScrollVelocity?: number;
   maxScrollPadding?: number;
-}
-
-function targetScrolledTotally(target: HTMLElement, xVelocity: number, yVelocity: number) {
-  return (
-    (xVelocity === 0 ||
-      (xVelocity < 0 && target.scrollLeft === 0) ||
-      (xVelocity > 0 && target.scrollWidth - target.clientWidth - target.scrollLeft < 1)) &&
-    (yVelocity === 0 ||
-      (yVelocity < 0 && target.scrollTop === 0) ||
-      (yVelocity > 0 && target.scrollHeight - target.clientHeight - target.scrollTop < 1))
-  );
 }
 
 function doAutoScrollByOffset(target: HTMLElement, offset: Position, options?: AutoScrollOption) {
@@ -41,11 +31,11 @@ function doAutoScrollByOffset(target: HTMLElement, offset: Position, options?: A
       ),
   ];
   let stop = noop;
-  if (!targetScrolledTotally(target, xVelocity, yVelocity)) {
+  if (!doesElementScrolledTotally(target, { x: xVelocity, y: yVelocity })) {
     stop = rafInterval(() => {
       target.scrollLeft += xVelocity;
       target.scrollTop += yVelocity;
-      if (targetScrolledTotally(target, xVelocity, yVelocity)) {
+      if (doesElementScrolledTotally(target, { x: xVelocity, y: yVelocity })) {
         stop();
       }
     });
