@@ -1,7 +1,7 @@
 import { Ref, unref, watchEffect } from 'vue';
 import { MaybeNullableRef, Position } from '../typings/internal';
+import doesElementScrollable from '../utils/doesElementScrollable';
 import doesElementScrolledTotally from '../utils/doesElementScrolledTotally';
-import { findScrollableParent } from '../utils/findScrollableParent';
 import { noop } from '../utils/noop';
 import rafInterval from '../utils/rafInterval';
 import { tryOnScopeDispose } from '../utils/tryOnScopeDispose';
@@ -57,16 +57,14 @@ export function usePointAutoScroll(
     stop = watchEffect((onCleanup) => {
       const targetDOM = unref(target);
       const point = unref(pointRef);
-      if (!targetDOM) return;
-      const scrollableDom = findScrollableParent(targetDOM);
-      if (!scrollableDom) return;
-      const rect = scrollableDom.getBoundingClientRect();
+      if (!targetDOM || !doesElementScrollable(targetDOM)) return;
+      const rect = targetDOM.getBoundingClientRect();
 
       const scrollableEdge = {
-        top: rect.top + scrollableDom.clientTop + scrollGutter,
-        bottom: rect.top + scrollableDom.clientTop + scrollableDom.clientHeight - scrollGutter,
-        left: rect.left + scrollableDom.clientLeft + scrollGutter,
-        right: rect.left + scrollableDom.clientLeft + scrollableDom.clientWidth - scrollGutter,
+        top: rect.top + targetDOM.clientTop + scrollGutter,
+        bottom: rect.top + targetDOM.clientTop + targetDOM.clientHeight - scrollGutter,
+        left: rect.left + targetDOM.clientLeft + scrollGutter,
+        right: rect.left + targetDOM.clientLeft + targetDOM.clientWidth - scrollGutter,
       };
 
       const [x, y] = point;
@@ -83,7 +81,7 @@ export function usePointAutoScroll(
         offsetY = y - scrollableEdge.bottom;
       }
       if (offsetX !== 0 || offsetY !== 0) {
-        onCleanup(doAutoScrollByOffset(scrollableDom, [offsetX, offsetY], options));
+        onCleanup(doAutoScrollByOffset(targetDOM, [offsetX, offsetY], options));
       }
     });
   };

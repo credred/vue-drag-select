@@ -7,6 +7,7 @@ import { rectIsIntersect } from './utils/rectIsIntersect';
 
 interface UseDragToSelectConfig {
   contentRef: MaybeNullableRef<HTMLElement>;
+  containerRef: MaybeNullableRef<HTMLElement>;
   options: Set<Option>;
   onChange: (selectedOptions: Set<unknown>) => void;
   draggableOnOption: MaybeRef<boolean>;
@@ -15,6 +16,7 @@ interface UseDragToSelectConfig {
 
 export function useDragToSelect({
   contentRef,
+  containerRef,
   options,
   onChange,
   draggableOnOption,
@@ -44,7 +46,7 @@ export function useDragToSelect({
     },
   });
 
-  usePointAutoScroll(contentRef, isDragging, pointPosition);
+  usePointAutoScroll(containerRef, isDragging, pointPosition);
 
   watch(areaRect, () => {
     const newSelectedOptions = new Set();

@@ -148,9 +148,11 @@ const { options, consumeClickedOnOption, consumePointerDownedOnOption } = useOpt
 );
 
 const contentRef = ref<HTMLElement>();
+const containerRef = ref<HTMLElement>();
 
 const { areaStyle: areaRectStyle, dragged } = useDragToSelect({
   contentRef,
+  containerRef,
   options,
   onChange,
   consumePointerDownedOnOption,
@@ -170,7 +172,7 @@ const onContentRefClick = () => {
 </script>
 
 <template>
-  <div class="drag-select__wrapper">
+  <div ref="containerRef" class="drag-select__wrapper">
     <div ref="contentRef" class="drag-select" style="position: relative" @click="onContentRefClick">
       <slot />
       <div class="drag-select__area" :class="props.dragAreaClass" :style="areaStyle" />
