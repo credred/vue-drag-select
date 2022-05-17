@@ -40,14 +40,16 @@ function doAutoScrollByOffset(target: HTMLElement, offset: Position, options?: A
         Math.min(maxScrollVelocity, Math.abs(offsetY) * (maxScrollVelocity / maxScrollPadding))
       ),
   ];
-  const stop = rafInterval(() => {
-    target.scrollLeft += xVelocity;
-    target.scrollTop += yVelocity;
-
-    if (targetScrolledTotally(target, xVelocity, yVelocity)) {
-      stop();
-    }
-  });
+  let stop = noop;
+  if (!targetScrolledTotally(target, xVelocity, yVelocity)) {
+    stop = rafInterval(() => {
+      target.scrollLeft += xVelocity;
+      target.scrollTop += yVelocity;
+      if (targetScrolledTotally(target, xVelocity, yVelocity)) {
+        stop();
+      }
+    });
+  }
 
   return stop;
 }
