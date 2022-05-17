@@ -21,6 +21,7 @@ export function useDragToSelect({
   consumePointerDownedOnOption,
 }: UseDragToSelectConfig) {
   const pointPosition = ref<Position>([0, 0]);
+  const dragged = ref(false);
   const {
     rect: areaRect,
     style: areaStyle,
@@ -28,12 +29,14 @@ export function useDragToSelect({
     stop,
   } = useDragRect(contentRef, {
     onStart(e) {
+      dragged.value = false;
       if (!unref(draggableOnOption) && consumePointerDownedOnOption()) {
         return false;
       }
       pointPosition.value = [e.clientX, e.clientY];
     },
     onMove(e) {
+      dragged.value = true;
       // cursor may be not moved
       if (e.clientX !== pointPosition.value[0] || e.clientY !== pointPosition.value[1]) {
         pointPosition.value = [e.clientX, e.clientY];
@@ -62,7 +65,7 @@ export function useDragToSelect({
     onChange(newSelectedOptions);
   });
 
-  return { isDragging, areaStyle, stop };
+  return { dragged, isDragging, areaStyle, stop };
 }
 
 interface UseClickToSelectConfig {
