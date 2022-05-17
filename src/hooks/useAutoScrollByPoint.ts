@@ -44,7 +44,7 @@ function doAutoScrollByOffset(target: HTMLElement, offset: Position, options?: A
   return stop;
 }
 
-export function usePointAutoScroll(
+export function useAutoScrollByPoint(
   target: MaybeNullableRef<HTMLElement>,
   enable: Ref<boolean>,
   pointRef: Ref<Position>,

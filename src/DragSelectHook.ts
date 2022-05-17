@@ -1,7 +1,7 @@
 import { watch, ref, unref } from 'vue';
 import { Option } from './DragSelectCommon';
 import { useDragRect } from './hooks/useDragRect';
-import { usePointAutoScroll } from './hooks/useAutoScroll';
+import { useAutoScrollByPoint } from './hooks/useAutoScrollByPoint';
 import { MaybeNullableRef, MaybeRef, Position } from './typings/internal';
 import { rectIsIntersect } from './utils/rectIsIntersect';
 
@@ -46,7 +46,7 @@ export function useDragToSelect({
     },
   });
 
-  usePointAutoScroll(containerRef, isDragging, pointPosition);
+  useAutoScrollByPoint(containerRef, isDragging, pointPosition);
 
   watch(areaRect, () => {
     const newSelectedOptions = new Set();
