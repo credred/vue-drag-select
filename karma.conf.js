@@ -13,7 +13,7 @@ module.exports = function (config) {
     reporters: ['spec'],
     files: [
       {
-        pattern: '__tests__/_setup/normalize.css',
+        pattern: '__tests__/_setup/global.css',
         type: 'css',
         watched: true,
         served: true,
