@@ -12,8 +12,9 @@ export function pointerMove(x: number, y: number) {
   });
 }
 
-export async function pointerdown(x: number, y: number) {
+export async function pointerdown(x: number, y: number, target?: Element | null) {
   const user = userEvent.setup();
+  
   const keyDef = {
     name: 'pointerdown',
     pointerType: 'mouse',
@@ -21,7 +22,7 @@ export async function pointerdown(x: number, y: number) {
   } as const;
   await user.pointer({
     keyDef,
-    target: document.elementFromPoint(x, y) || document.documentElement,
+    target: target || document.elementFromPoint(x, y) || document.documentElement,
     releaseSelf: false,
     releasePrevious: false,
     coords: {
@@ -30,10 +31,10 @@ export async function pointerdown(x: number, y: number) {
     },
   });
 
-  return function pointerup(x: number, y: number) {
+  return function pointerup(newX?: number, newY?: number, newTarget?: Element | null) {
     return user.pointer({
       keyDef,
-      target: document.elementFromPoint(x, y) || document.documentElement,
+      target: newTarget || document.elementFromPoint(newX ?? x, newY ?? y) || document.documentElement,
       releasePrevious: true,
       coords: {
         x,
@@ -44,8 +45,30 @@ export async function pointerdown(x: number, y: number) {
 }
 
 export async function click(x: number, y: number) {
-  const pointerup = await pointerdown(x, y);
-  await pointerup(x, y);
+  const downTarget = document.elementFromPoint(x, y) ;
+  const pointerup = await pointerdown(x, y, downTarget);
+  const upTarget = document.elementFromPoint(x, y);
+  await pointerup(x, y, upTarget);
+  if (downTarget && upTarget && downTarget !== upTarget) {
+    let commonParent: Element = document.documentElement;
+    const upTargetParents: Set<Element> = new Set();
+    let upTargetParent: Element | null = upTarget;
+    while(upTargetParent) {
+      upTargetParents.add(upTargetParent);
+      upTargetParent = upTargetParent.parentElement;
+    }
+    let downTargetParent: Element | null = downTarget;
+    while(downTargetParent) {
+      if (upTargetParents.has(downTargetParent)) {
+        commonParent = downTargetParent;
+        break;
+      }
+      downTargetParent = downTargetParent.parentElement;
+    }
+    // user-event not trigger click event if downTarget is not upTarget
+    // but browser will pick their common parent as click event target
+    await userEvent.click(commonParent);
+  }
 }
 
 interface DragOption {
