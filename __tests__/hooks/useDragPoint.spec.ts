@@ -10,10 +10,10 @@ describe('hooks/useDragPoint', () => {
     const { fromPoint, toPoint, isDragging } = useDragPoints(el);
     await drag(elBox.validArea.from, elBox.validArea.to, {
       onStart() {
-        expect(isDragging.value).toEqual(true);
         expect(fromPoint.value).toEqual(elBox.validArea.relativeFrom);
       },
       onMove(pos) {
+        expect(isDragging.value).toEqual(true);
         expect(toPoint.value).toEqual(elBox.relative(pos));
       },
       onBeforeEnd() {},

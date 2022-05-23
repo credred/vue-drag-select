@@ -9,6 +9,7 @@ specifiers:
   '@storybook/vue3': ^6.5.3
   '@testing-library/dom': ^8.13.0
   '@testing-library/user-event': ^14.1.1
+  '@testing-library/vue': ^6.4.2
   '@types/jasmine': ^4.0.3
   '@types/karma': ^6.3.3
   '@types/node': ^16.11.12
@@ -49,6 +50,7 @@ devDependencies:
   '@storybook/vue3': 6.5.3_q42tosxivevrfw5bzu4ykburau
   '@testing-library/dom': 8.13.0
   '@testing-library/user-event': 14.2.0_tlwynutqiyp5mns3woioasuxnq
+  '@testing-library/vue': 6.5.1_vue@3.2.35
   '@types/jasmine': 4.0.3
   '@types/karma': 6.3.3
   '@types/node': 16.11.36
@@ -3220,6 +3222,19 @@ packages:
       '@testing-library/dom': 8.13.0
     dev: true
 
+  /@testing-library/vue/6.5.1_vue@3.2.35:
+    resolution: {integrity: sha512-zbh2cAJrFbNN9i30Ly6rhbxq7y1aD1Au8v4QjukOLWWHJj7WH6q051eBcHTxPFjKCU4sCH6w6Xn5Qj7B35vc0w==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      '@vue/compiler-sfc': '>= 3'
+      vue: '>= 3'
+    dependencies:
+      '@babel/runtime': 7.18.0
+      '@testing-library/dom': 8.13.0
+      '@vue/test-utils': 2.0.0_vue@3.2.35
+      vue: 3.2.35
+    dev: true
+
   /@types/aria-query/4.2.2:
     resolution: {integrity: sha512-HnYpAE1Y6kRyKM/XkEuiRQhTHvkzMBurTHnpFLYLBGPIylZNPs9jJcuOOYWxPLJCSEtmZT0Y8rHDokKN7rRTig==}
     dev: true
@@ -3760,6 +3775,14 @@ packages:
 
   /@vue/shared/3.2.35:
     resolution: {integrity: sha512-/sxDqMcy0MsfQ3LQixKYDxIinDYNy1dXTsF2Am0pv0toImWabymFQ8cFmPJnPt+gh5ElKwwn7KzQcDbLHar60A==}
+    dev: true
+
+  /@vue/test-utils/2.0.0_vue@3.2.35:
+    resolution: {integrity: sha512-zL5kygNq7hONrO1CzaUGprEAklAX+pH8J1MPMCU3Rd2xtSYkZ+PmKU3oEDRg8VAGdL5lNJHzDgrud5amFPtirw==}
+    peerDependencies:
+      vue: ^3.0.1
+    dependencies:
+      vue: 3.2.35
     dev: true
 
   /@webassemblyjs/ast/1.11.1:

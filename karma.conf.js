@@ -1,3 +1,4 @@
+const vueJsx = require('@vitejs/plugin-vue-jsx');
 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
@@ -19,7 +20,7 @@ module.exports = function (config) {
         served: false,
       },
       {
-        pattern: '__tests__/**/*.spec.ts',
+        pattern: '__tests__/**/*.spec.ts?(x)',
         type: 'module',
         watched: false,
         served: false,
@@ -27,13 +28,20 @@ module.exports = function (config) {
     ],
     vite: {
       config: {
+        plugins: [vueJsx()],
         resolve: {
+          // @testing-library/vue compatible
+          conditions: ['import'],
           alias: {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             '@': path.resolve(__dirname, './src'),
             // eslint-disable-next-line @typescript-eslint/naming-convention
             '@test': path.resolve(__dirname, './__tests__'),
           },
+        },
+        define: {
+          'process.env.VTL_SKIP_AUTO_CLEANUP': false,
+          'process.env.VTL_SKIP_WARN_EVENT_UPDATE': false,
         },
         css: {
           modules: {

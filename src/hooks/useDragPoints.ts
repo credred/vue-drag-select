@@ -31,11 +31,11 @@ export function useDragPoints(target: MaybeNullableRef<HTMLElement | SVGElement>
       if (options.onStart?.(e, _fromPoint) === false) {
         return false;
       }
-      isDragging.value = true;
       fromPoint.value = _fromPoint;
       toPoint.value = _fromPoint;
     },
     onMove(e) {
+      isDragging.value = true;
       const targetDOM = unref(target);
       if (!targetDOM) return;
       const rect = targetDOM.getBoundingClientRect();
