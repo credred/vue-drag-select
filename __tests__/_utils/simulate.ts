@@ -42,6 +42,11 @@ export async function pointerdown(x: number, y: number) {
   }
 }
 
+export async function click(x: number, y: number) {
+  const pointerup = await pointerdown(x, y);
+  await pointerup(x, y);
+}
+
 interface DragOption {
   duration?: number;
   interval?: number;
