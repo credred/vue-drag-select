@@ -64,7 +64,7 @@ export function useEventListener(
         el.removeEventListener(event, listener, options);
       };
     },
-    { immediate: true, flush: 'post' }
+    { immediate: true, flush: 'sync' }
   );
 
   let stopImpl = () => {
