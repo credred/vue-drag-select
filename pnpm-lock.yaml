@@ -1,43 +1,44 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@babel/core': ^7.18.0
+  '@babel/core': ^7.16.5
   '@storybook/addon-actions': ^6.5.3
   '@storybook/addon-essentials': ^6.5.3
   '@storybook/addon-links': ^6.5.3
   '@storybook/builder-vite': ^0.1.35
   '@storybook/vue3': ^6.5.3
   '@testing-library/dom': ^8.13.0
-  '@testing-library/user-event': ^14.2.0
+  '@testing-library/user-event': ^14.1.1
   '@types/jasmine': ^4.0.3
   '@types/karma': ^6.3.3
-  '@types/node': ^16.11.36
-  '@types/prettier': ^2.6.1
-  '@typescript-eslint/eslint-plugin': ^5.25.0
-  '@typescript-eslint/parser': ^5.25.0
-  '@vitejs/plugin-vue': ^2.3.3
-  '@vitejs/plugin-vue-jsx': ^1.3.10
-  babel-loader: ^8.2.5
-  eslint: ^8.16.0
-  eslint-config-prettier: ^8.5.0
-  eslint-define-config: ^1.4.1
-  eslint-plugin-jest: ^25.7.0
+  '@types/node': ^16.11.12
+  '@types/prettier': ^2.4.2
+  '@typescript-eslint/eslint-plugin': ^5.6.0
+  '@typescript-eslint/parser': ^5.6.0
+  '@vitejs/plugin-vue': ^2.0.1
+  '@vitejs/plugin-vue-jsx': ^1.3.3
+  babel-loader: ^8.2.3
+  eslint: ^8.4.1
+  eslint-config-prettier: ^8.3.0
+  eslint-define-config: ^1.2.0
+  eslint-plugin-jest: ^25.3.0
   eslint-plugin-prettier: ^4.0.0
-  eslint-plugin-vue: ^8.7.1
-  karma: ^6.3.20
+  eslint-plugin-vue: ^8.2.0
+  karma: ^6.3.19
   karma-chrome-launcher: ^3.1.1
   karma-coverage: ^2.2.0
-  karma-jasmine: ^5.0.1
+  karma-jasmine: ^5.0.0
   karma-spec-reporter: ^0.0.34
   karma-vite: ^1.0.1
-  prettier: ^2.6.2
+  prettier: ^2.5.1
   puppeteer: ^13.7.0
-  typescript: ^4.6.4
-  vite: ^2.9.9
-  vue: ^3.2.35
-  vue-eslint-parser: ^8.3.0
+  sass: ^1.52.1
+  typescript: ^4.5.2
+  vite: ^2.7.12
+  vue: ^3.2.16
+  vue-eslint-parser: ^8.0.1
   vue-loader: ^16.8.3
-  vue-tsc: ^0.34.15
+  vue-tsc: ^0.34.11
 
 devDependencies:
   '@babel/core': 7.18.0
@@ -71,8 +72,9 @@ devDependencies:
   karma-vite: 1.0.1_karma@6.3.20+vite@2.9.9
   prettier: 2.6.2
   puppeteer: 13.7.0
+  sass: 1.52.1
   typescript: 4.6.4
-  vite: 2.9.9
+  vite: 2.9.9_sass@1.52.1
   vue: 3.2.35
   vue-eslint-parser: 8.3.0_eslint@8.16.0
   vue-loader: 16.8.3_vue@3.2.35
@@ -587,7 +589,7 @@ packages:
       '@babel/core': ^7.0.0-0
     dependencies:
       '@babel/core': 7.12.9
-      '@babel/helper-plugin-utils': 7.10.4
+      '@babel/helper-plugin-utils': 7.17.12
       '@babel/plugin-syntax-object-rest-spread': 7.8.3_@babel+core@7.12.9
       '@babel/plugin-transform-parameters': 7.17.12_@babel+core@7.12.9
     dev: true
@@ -1662,7 +1664,7 @@ packages:
       magic-string: 0.26.2
       react-docgen-typescript: 2.2.2_typescript@4.6.4
       typescript: 4.6.4
-      vite: 2.9.9
+      vite: 2.9.9_sass@1.52.1
     dev: true
 
   /@jridgewell/gen-mapping/0.1.1:
@@ -1911,7 +1913,7 @@ packages:
       '@storybook/core-events': 6.5.3
       '@storybook/csf': 0.0.2--canary.4566f4d.1
       '@storybook/docs-tools': 6.5.3
-      '@storybook/mdx1-csf': 0.0.1-canary.1.867dcd5.0_@babel+core@7.18.0
+      '@storybook/mdx1-csf': 0.0.1-canary.1.eed86d7.0_@babel+core@7.18.0
       '@storybook/node-logger': 6.5.3
       '@storybook/postinstall': 6.5.3
       '@storybook/preview-web': 6.5.3
@@ -2248,7 +2250,7 @@ packages:
       magic-string: 0.26.2
       react-docgen: 6.0.0-alpha.2
       slash: 3.0.0
-      vite: 2.9.9
+      vite: 2.9.9_sass@1.52.1
       vite-plugin-mdx: 3.5.10_f34f3gtijkpgkfxkddkqpkzmfq
     transitivePeerDependencies:
       - '@storybook/mdx2-csf'
@@ -2779,7 +2781,7 @@ packages:
       '@babel/traverse': 7.18.0
       '@babel/types': 7.18.0
       '@storybook/csf': 0.0.2--canary.4566f4d.1
-      '@storybook/mdx1-csf': 0.0.1-canary.1.867dcd5.0_@babel+core@7.18.0
+      '@storybook/mdx1-csf': 0.0.1-canary.1.eed86d7.0_@babel+core@7.18.0
       core-js: 3.22.5
       fs-extra: 9.1.0
       global: 4.4.0
@@ -2885,8 +2887,8 @@ packages:
       - webpack-command
     dev: true
 
-  /@storybook/mdx1-csf/0.0.1-canary.1.867dcd5.0_@babel+core@7.18.0:
-    resolution: {integrity: sha512-VnlE825M9SpjyJCPLCXbo+RbvqllsqXqRDCouzHKSpCE3Q79KR7MMURBsJo/vrTG1zeNG68Z4TZrLAu6IoyYaA==}
+  /@storybook/mdx1-csf/0.0.1-canary.1.eed86d7.0_@babel+core@7.18.0:
+    resolution: {integrity: sha512-KOoTWeseRyJYU5qzEWahgNRhRLgHzPrWx4jIiK4oI9MmNx81cD0B0o24Gq04Iyt89X4jTk+VPHc5REJO1Gs99Q==}
     dependencies:
       '@babel/generator': 7.18.0
       '@babel/parser': 7.18.0
@@ -3622,7 +3624,7 @@ packages:
       vite: ^2.5.10
       vue: ^3.2.25
     dependencies:
-      vite: 2.9.9
+      vite: 2.9.9_sass@1.52.1
       vue: 3.2.35
     dev: true
 
@@ -4384,7 +4386,7 @@ packages:
     hasBin: true
     dependencies:
       browserslist: 4.20.3
-      caniuse-lite: 1.0.30001341
+      caniuse-lite: 1.0.30001342
       normalize-range: 0.1.2
       num2fraction: 1.2.2
       picocolors: 0.2.1
@@ -4755,7 +4757,7 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001341
+      caniuse-lite: 1.0.30001342
       electron-to-chromium: 1.4.137
       escalade: 3.1.1
       node-releases: 2.0.4
@@ -4942,8 +4944,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /caniuse-lite/1.0.30001341:
-    resolution: {integrity: sha512-2SodVrFFtvGENGCv0ChVJIDQ0KPaS1cg7/qtfMaICgeMolDdo/Z2OD32F0Aq9yl6F4YFwGPBS5AaPqNYiW4PoA==}
+  /caniuse-lite/1.0.30001342:
+    resolution: {integrity: sha512-bn6sOCu7L7jcbBbyNhLg0qzXdJ/PMbybZTH/BA6Roet9wxYRm6Tr9D0s0uhLkOZ6MSG+QU6txUgdpr3MXIVqjA==}
     dev: true
 
   /capture-exit/2.0.0:
@@ -7703,6 +7705,10 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
+  /immutable/4.0.0:
+    resolution: {integrity: sha512-zIE9hX70qew5qTUjSS7wi1iwj/l7+m54KWU247nhM3v806UdGj1yDndXj+IOYxxtW9zyLI+xqFNZjTuDaLUqFw==}
+    dev: true
+
   /import-fresh/3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
     engines: {node: '>=6'}
@@ -8459,7 +8465,7 @@ packages:
     dependencies:
       connect: 3.7.0
       karma: 6.3.20
-      vite: 2.9.9
+      vite: 2.9.9_sass@1.52.1
       vite-plugin-istanbul: 2.7.3
     transitivePeerDependencies:
       - supports-color
@@ -10748,6 +10754,16 @@ packages:
       - supports-color
     dev: true
 
+  /sass/1.52.1:
+    resolution: {integrity: sha512-fSzYTbr7z8oQnVJ3Acp9hV80dM1fkMN7mSD/25mpcct9F7FPBMOI8krEYALgU1aZoqGhQNhTPsuSmxjnIvAm4Q==}
+    engines: {node: '>=12.0.0'}
+    hasBin: true
+    dependencies:
+      chokidar: 3.5.3
+      immutable: 4.0.0
+      source-map-js: 1.0.2
+    dev: true
+
   /scheduler/0.19.1:
     resolution: {integrity: sha512-n/zwRWRYSUj0/3g/otKDRPMh6qv2SYMWNq85IEa8iZyAv8od9zDYpGSnpBEjNgcMNq6Scbu5KfIPxNF72R/2EA==}
     dependencies:
@@ -12091,10 +12107,10 @@ packages:
       esbuild: 0.13.8
       resolve: 1.22.0
       unified: 9.2.2
-      vite: 2.9.9
+      vite: 2.9.9_sass@1.52.1
     dev: true
 
-  /vite/2.9.9:
+  /vite/2.9.9_sass@1.52.1:
     resolution: {integrity: sha512-ffaam+NgHfbEmfw/Vuh6BHKKlI/XIAhxE5QSS7gFLIngxg171mg1P3a4LSRME0z2ZU1ScxoKzphkipcYwSD5Ew==}
     engines: {node: '>=12.2.0'}
     hasBin: true
@@ -12114,6 +12130,7 @@ packages:
       postcss: 8.4.14
       resolve: 1.22.0
       rollup: 2.74.1
+      sass: 1.52.1
     optionalDependencies:
       fsevents: 2.3.2
     dev: true

@@ -13,10 +13,10 @@ module.exports = function (config) {
     reporters: ['spec'],
     files: [
       {
-        pattern: '__tests__/_setup/global.css',
+        pattern: '__tests__/_setup/global.module.scss',
         type: 'css',
-        watched: true,
-        served: true,
+        watched: false,
+        served: false,
       },
       {
         pattern: '__tests__/**/*.spec.ts',
@@ -33,6 +33,11 @@ module.exports = function (config) {
             '@': path.resolve(__dirname, './src'),
             // eslint-disable-next-line @typescript-eslint/naming-convention
             '@test': path.resolve(__dirname, './__tests__'),
+          },
+        },
+        css: {
+          modules: {
+            scopeBehaviour: 'global',
           },
         },
       },

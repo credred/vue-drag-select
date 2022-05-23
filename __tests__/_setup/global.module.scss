@@ -1,0 +1,41 @@
+@import "./variable.module.scss";
+
+@function px($number) {
+  @return $number * 1px;
+}
+
+body {
+  margin: 0;
+}
+
+.drag-select {
+  display: flex;
+  margin: px($dragSelectMargin);
+  gap: px($dragSelectGap);
+  flex-wrap: wrap;
+  width: px($dragSelectWidth);
+  border: px($dragSelectBorder) solid;
+}
+
+.drag-select__area::after {
+  display: block;
+  position: absolute;
+  content: " ";
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  border: 1px solid rgb(66, 153, 225);
+}
+
+.drag-select-option {
+  width: px($dragSelectOptionWidth);
+  height: px($dragSelectOptionHeight);
+  color: #ffffff;
+  background: #E37E26;
+}
+
+.drag-select-option--selected {
+  color: #000000;
+  background: #5fdddc;
+}

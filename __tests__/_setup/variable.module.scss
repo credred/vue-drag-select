@@ -1,0 +1,15 @@
+$dragSelectMargin: 10;
+$dragSelectBorder: 5;
+$dragSelectWidth: 320;
+$dragSelectGap: 10;
+$dragSelectOptionWidth: 100;
+$dragSelectOptionHeight: 100;
+
+:export {
+  dragSelectMargin: $dragSelectMargin;
+  dragSelectBorder: $dragSelectBorder;
+  dragSelectWidth: $dragSelectWidth;
+  dragSelectGap: $dragSelectGap;
+  dragSelectOptionWidth: $dragSelectOptionWidth;
+  dragSelectOptionHeight: $dragSelectOptionHeight;
+}
