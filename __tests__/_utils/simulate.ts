@@ -17,6 +17,7 @@ export async function pointerdown(x: number, y: number) {
   const keyDef = {
     name: 'pointerdown',
     pointerType: 'mouse',
+    button: 'primary',
   } as const;
   await user.pointer({
     keyDef,
