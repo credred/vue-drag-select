@@ -26,6 +26,9 @@ module.exports = function (config) {
         served: false,
       },
     ],
+    coverageReporter: {
+      reporters: [{ type: 'lcov' }],
+    },
     vite: {
       config: {
         plugins: [vueJsx()],
