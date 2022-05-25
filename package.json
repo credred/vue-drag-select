@@ -26,7 +26,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "vite",
-    "test": "karma start --singleRun --reporter spec,coverage",
+    "test": "karma start --singleRun --reporters spec,coverage",
     "test:dev": "karma start",
     "build-typings": "vue-tsc --declaration --emitDeclarationOnly --outDir dist",
     "build": "vite build && yarn build-typings",
