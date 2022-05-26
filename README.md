@@ -1,5 +1,19 @@
-# vue-drag-select
-A drag select component for Vue3
+<h1 align="center">vue-drag-select</h1>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@coleqiu/vue-drag-select">
+    <img src="https://img.shields.io/npm/v/@coleqiu/vue-drag-select"/>
+  </a>
+  <a href="https://codecov.io/gh/credred/vue-drag-select">
+    <img src="https://codecov.io/gh/credred/vue-drag-select/branch/master/graph/badge.svg?token=HRF6OPQ1SB"/>
+  </a>
+  <a href="https://github.com/credred/vue-drag-select/actions/workflows/test.yml">
+    <img src="https://github.com/credred/vue-drag-select/actions/workflows/test.yml/badge.svg"/>
+  </a>
+  <a href="https://bundlephobia.com/package/@coleqiu/vue-drag-select">
+    <img src="https://img.shields.io/bundlephobia/minzip/@coleqiu/vue-drag-select"/>
+  </a>
+</p>
 
 ## 🔧Installation
 ```bash
