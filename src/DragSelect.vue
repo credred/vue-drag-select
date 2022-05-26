@@ -13,7 +13,6 @@ const _p = defineProps({
    * @alias v-model
    */
   modelValue: {
-    type: Array || Set || undefined,
     default: undefined,
     validator(value) {
       const plainValue = unref(value);
