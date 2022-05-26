@@ -57,10 +57,10 @@ const DragTemplate = (args) => ({
   render() {
     return (
       <>
-        <div>drag only in client(mousedown event will not trigger on scrollbar or border)</div>
+        <div>drag to outside select area to scroll</div>
         <div>selected: {args.modelValue.value.join(",")}</div>
         <DragSelect {...(args)}>
-          {Array(20)
+          {Array(100)
             .fill(0)
             .map((v, index) => (
               <DragSelectOption value={index}>{index}</DragSelectOption>
@@ -71,11 +71,11 @@ const DragTemplate = (args) => ({
 });
 
 export const Drag = DragTemplate.bind({});
-Drag.storyName = "Drag Only In Rect";
+Drag.storyName = "Drag To Scroll";
 Drag.args = {
   modelValue: ref([]),
   'onUpdate:modelValue': (v) => {
     Drag.args.modelValue.value = v;
   },
-  style: { height: "300px", overflow: "auto", border: "20px solid #d83512" }
+  style: { height: "300px", overflow: "auto", border: "1px solid #d83512" }
 };
