@@ -1,7 +1,7 @@
 import { watch, ref, unref } from 'vue';
 import { Option } from './DragSelectCommon';
 import { useDragRect } from './hooks/useDragRect';
-import { useAutoScrollByPoint } from './hooks/useAutoScrollByPoint';
+import useAutoScrollByPoint from './hooks/useAutoScrollByPoint';
 import { MaybeNullableRef, MaybeRef, Position } from './typings/internal';
 import { rectIsIntersect } from './utils/rectIsIntersect';
 

@@ -1,5 +1,5 @@
-import { Ref, unref, watchEffect } from 'vue';
-import { MaybeNullableRef, Position } from '../typings/internal';
+import { unref, watchEffect } from 'vue';
+import { Fn, MaybeNullableRef, MaybeRef, Position } from '../typings/internal';
 import doesElementScrollable from '../utils/doesElementScrollable';
 import doesElementScrolledTotally from '../utils/doesElementScrolledTotally';
 import { noop } from '../utils/noop';
@@ -13,10 +13,12 @@ interface AutoScrollOption {
   // minimum distance moved in one second
   minScrollVelocity?: number;
   maxScrollPadding?: number;
+  /** on auto scroll end */
+  onEnd?: Fn;
 }
 
-function doAutoScrollByOffset(target: HTMLElement, offset: Position, options?: AutoScrollOption) {
-  const { maxScrollPadding = 30, minScrollVelocity = 2, maxScrollVelocity = 5 } = options || {};
+function doAutoScrollByOffset(target: HTMLElement, offset: Position, options: AutoScrollOption = {}) {
+  const { maxScrollPadding = 30, minScrollVelocity = 2, maxScrollVelocity = 5, onEnd } = options;
   const [offsetX, offsetY] = offset;
   const [xVelocity, yVelocity] = [
     Math.sign(offsetX) *
@@ -37,6 +39,7 @@ function doAutoScrollByOffset(target: HTMLElement, offset: Position, options?: A
       target.scrollTop += yVelocity;
       if (doesElementScrolledTotally(target, { x: xVelocity, y: yVelocity })) {
         stop();
+        onEnd?.();
       }
     });
   }
@@ -44,10 +47,10 @@ function doAutoScrollByOffset(target: HTMLElement, offset: Position, options?: A
   return stop;
 }
 
-export function useAutoScrollByPoint(
+export default function useAutoScrollByPoint(
   target: MaybeNullableRef<HTMLElement>,
-  enable: Ref<boolean>,
-  pointRef: Ref<Position>,
+  enable: MaybeRef<boolean>,
+  pointRef: MaybeRef<Position>,
   options?: AutoScrollOption
 ) {
   const { scrollGutter = 0 } = options || {};
