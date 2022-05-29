@@ -36,9 +36,7 @@ module.exports = function (config) {
           // @testing-library/vue compatible
           conditions: ['import'],
           alias: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
             '@': path.resolve(__dirname, './src'),
-            // eslint-disable-next-line @typescript-eslint/naming-convention
             '@test': path.resolve(__dirname, './__tests__'),
           },
         },

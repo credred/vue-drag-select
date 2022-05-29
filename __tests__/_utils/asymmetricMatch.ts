@@ -1,9 +1,9 @@
-export function strictEq(actual: any) {
+export function strictEq(actual: unknown) {
   return {
     /*
      * The asymmetricMatch function is required, and must return a boolean.
      */
-    asymmetricMatch: function (expected: any) {
+    asymmetricMatch: function (expected: unknown) {
       return Object.is(actual, expected);
     },
 
@@ -12,7 +12,8 @@ export function strictEq(actual: any) {
      * return value will be seen by the user in the message when a test fails.
      */
     jasmineToString: function () {
-      return '<strictEq: ' + actual + '>';
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      return `<strictEq: ${actual}>`;
     },
   };
 }

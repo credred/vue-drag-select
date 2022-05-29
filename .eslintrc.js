@@ -39,7 +39,6 @@ module.exports = defineConfig({
         varsIgnorePattern: '^_',
       },
     ],
-    '@typescript-eslint/naming-convention': 'error',
     'vue/max-attributes-per-line': 'off',
     'vue/attribute-hyphenation': ['error', 'never'],
   },
@@ -49,7 +48,26 @@ module.exports = defineConfig({
       rules: tsForEslintConfig.overrides[0].rules,
     },
     {
-      // @ts-expect-error eslint-define-config does missing type definition
+      parserOptions: {
+        project: './tsconfig.conf.json',
+      },
+      files: tsconfigConf.include,
+      env: {
+        node: true,
+      },
+      // configuration file type is cjs，disable no-var-requires
+      rules: {
+        '@typescript-eslint/no-var-requires': 'off',
+        '@typescript-eslint/no-unsafe-assignment': 'off',
+      },
+    },
+    {
+      parserOptions: {
+        project: './tsconfig.example.json',
+      },
+      files: ['stories/*'],
+    },
+    {
       parserOptions: {
         project: './tsconfig.conf.json',
       },
@@ -65,16 +83,16 @@ module.exports = defineConfig({
     },
     {
       files: ['**/__tests__/**/*.{j,t}s?(x)'],
-      extends: ['plugin:jest/style', 'plugin:jest/recommended'],
-      // @ts-expect-error eslint-define-config does missing type definition
+      plugins: ['jasmine'],
+      extends: ['plugin:jasmine/recommended'],
       parserOptions: {
         project: './tsconfig.test.json',
       },
       rules: {
         '@typescript-eslint/unbound-method': 'off',
-        'jest/unbound-method': 'error',
+        'jasmine/prefer-toHaveBeenCalledWith': 'off',
       },
     },
   ],
-  ignorePatterns: ['dist/**', 'coverage/**'],
+  ignorePatterns: ['dist/**', 'coverage/**', 'stories/**'],
 });

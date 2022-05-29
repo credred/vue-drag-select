@@ -16,7 +16,7 @@ describe('hooks/useDragPoint', () => {
         expect(isDragging.value).toEqual(true);
         expect(toPoint.value).toEqual(elBox.relative(pos));
       },
-      onBeforeEnd() {},
+      // onBeforeEnd() {},
       onEnd() {
         expect(isDragging.value).toEqual(false);
       },
@@ -40,8 +40,9 @@ describe('hooks/useDragPoint', () => {
       onStart: () => false,
     });
     await pointerdown(...elBox.validArea.from);
+
     expect(isDragging.value).toBe(false);
     expect(fromPoint.value).toEqual([0, 0]);
     expect(toPoint.value).toEqual([0, 0]);
-  })
+  });
 });

@@ -14,7 +14,7 @@ export function pointerMove(x: number, y: number) {
 
 export async function pointerdown(x: number, y: number, target?: Element | null) {
   const user = userEvent.setup();
-  
+
   const keyDef = {
     name: 'pointerdown',
     pointerType: 'mouse',
@@ -40,12 +40,12 @@ export async function pointerdown(x: number, y: number, target?: Element | null)
         x,
         y,
       },
-    })
-  }
+    });
+  };
 }
 
 export async function click(x: number, y: number) {
-  const downTarget = document.elementFromPoint(x, y) ;
+  const downTarget = document.elementFromPoint(x, y);
   const pointerup = await pointerdown(x, y, downTarget);
   const upTarget = document.elementFromPoint(x, y);
   await pointerup(x, y, upTarget);
@@ -53,12 +53,12 @@ export async function click(x: number, y: number) {
     let commonParent: Element = document.documentElement;
     const upTargetParents: Set<Element> = new Set();
     let upTargetParent: Element | null = upTarget;
-    while(upTargetParent) {
+    while (upTargetParent) {
       upTargetParents.add(upTargetParent);
       upTargetParent = upTargetParent.parentElement;
     }
     let downTargetParent: Element | null = downTarget;
-    while(downTargetParent) {
+    while (downTargetParent) {
       if (upTargetParents.has(downTargetParent)) {
         commonParent = downTargetParent;
         break;

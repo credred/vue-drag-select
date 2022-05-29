@@ -25,7 +25,7 @@ describe('hooks/useDragArea', () => {
         expect(rect.value).toEqual(toRect(elBox.validArea.relativeFrom, elBox.validArea.relativeTo));
       },
     });
-    
+
     // bottomRight to topLeft
     await drag(elBox.validArea.to, subtraction(elBox.validArea.from, [10, 10]), {
       onBeforeEnd() {
@@ -37,12 +37,14 @@ describe('hooks/useDragArea', () => {
   it('draggable area should be paddingBox', async () => {
     const { isDragging } = useDragRect(el);
     // border edge
-    pointerdown(...subtraction<Position>(elBox.validArea.from, [elBox.borderLeft / 2, elBox.borderTop / 2]));
-    pointerdown(...subtraction<Position>(elBox.validArea.from, [elBox.borderLeft / 2, elBox.borderTop / 2 + 1]));
+    await pointerdown(...subtraction<Position>(elBox.validArea.from, [elBox.borderLeft / 2, elBox.borderTop / 2]));
+    await pointerdown(...subtraction<Position>(elBox.validArea.from, [elBox.borderLeft / 2, elBox.borderTop / 2 + 1]));
+
     expect(isDragging.value).toBe(false);
     // paddingBox edge
-    pointerdown(...addition<Position>(elBox.validArea.from, [elBox.paddingLeft / 2, elBox.paddingTop / 2]));
-    pointerMove(...addition<Position>(elBox.validArea.from, [elBox.paddingLeft / 2, elBox.paddingTop / 2 + 1]));
+    await pointerdown(...addition<Position>(elBox.validArea.from, [elBox.paddingLeft / 2, elBox.paddingTop / 2]));
+    await pointerMove(...addition<Position>(elBox.validArea.from, [elBox.paddingLeft / 2, elBox.paddingTop / 2 + 1]));
+
     expect(isDragging.value).toBe(true);
   });
 });

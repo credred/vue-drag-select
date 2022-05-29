@@ -8,12 +8,14 @@ describe('toRect', () => {
       width: 40,
       height: 40,
     });
+
     expect(toRect([50, 50], [5, 5])).toEqual({
       left: 5,
       top: 5,
       width: 45,
       height: 45,
     });
+
     expect(toRect([0, 0], [0, 0])).toEqual({
       left: 0,
       top: 0,

@@ -7,7 +7,7 @@ const createPointerEvent = (type: string, eventInitDict?: PointerEventInit) => {
     isPrimary: true,
     ...eventInitDict,
   });
-}
+};
 
 describe('hooks/useDrag', () => {
   it('should trigger onStart callback after pointerdown event was triggered', () => {
@@ -34,10 +34,12 @@ describe('hooks/useDrag', () => {
     const { addEventListener } = createEventListener(window);
 
     el.dispatchEvent(createPointerEvent('pointerdown'));
+
     expect(addEventListener).not.toHaveBeenCalled();
 
     handler.and.returnValue(true);
     el.dispatchEvent(createPointerEvent('pointerdown'));
+
     expect(addEventListener).toHaveBeenCalled();
   });
 
@@ -50,10 +52,12 @@ describe('hooks/useDrag', () => {
     });
 
     window.dispatchEvent(createPointerEvent('pointermove'));
+
     expect(handler).not.toHaveBeenCalled();
 
     el.dispatchEvent(createPointerEvent('pointerdown'));
     window.dispatchEvent(createPointerEvent('pointermove'));
+
     expect(handler).toHaveBeenCalled();
   });
 
@@ -66,10 +70,12 @@ describe('hooks/useDrag', () => {
     });
 
     window.dispatchEvent(createPointerEvent('scroll'));
+
     expect(handler).not.toHaveBeenCalled();
 
     el.dispatchEvent(createPointerEvent('pointerdown'));
     window.dispatchEvent(createPointerEvent('scroll'));
+
     expect(handler).toHaveBeenCalled();
   });
 
@@ -81,10 +87,12 @@ describe('hooks/useDrag', () => {
     });
 
     window.dispatchEvent(createPointerEvent('pointerup'));
+
     expect(handler).not.toHaveBeenCalled();
 
     el.dispatchEvent(createPointerEvent('pointerdown'));
     window.dispatchEvent(createPointerEvent('pointerup'));
+
     expect(handler).toHaveBeenCalled();
   });
 
@@ -101,14 +109,18 @@ describe('hooks/useDrag', () => {
     });
 
     el.dispatchEvent(createPointerEvent('pointerdown', { isPrimary: false }));
+
     expect(startHandler).not.toHaveBeenCalled();
 
     el.dispatchEvent(createPointerEvent('pointerdown', { isPrimary: true }));
+
     expect(startHandler).toHaveBeenCalled();
 
     el.dispatchEvent(createPointerEvent('pointermove', { isPrimary: false }));
+
     expect(moveHandler).not.toHaveBeenCalled();
     el.dispatchEvent(createPointerEvent('pointerup', { isPrimary: false }));
+
     expect(endHandler).not.toHaveBeenCalled();
   });
 
@@ -124,16 +136,19 @@ describe('hooks/useDrag', () => {
 
     el.dispatchEvent(lastEvent);
     window.dispatchEvent(new Event('scroll'));
+
     expect(handler).toHaveBeenCalledWith(strictEq(lastEvent));
 
     lastEvent = createPointerEvent('pointermove');
     window.dispatchEvent(lastEvent);
     window.dispatchEvent(new Event('scroll'));
+
     expect(handler).toHaveBeenCalledWith(strictEq(lastEvent));
 
     lastEvent = createPointerEvent('pointermove');
     window.dispatchEvent(lastEvent);
     window.dispatchEvent(new Event('scroll'));
+
     expect(handler).toHaveBeenCalledWith(strictEq(lastEvent));
   });
 
@@ -146,16 +161,19 @@ describe('hooks/useDrag', () => {
     const pointerdownEvent = createPointerEvent('pointerdown');
     el.dispatchEvent(pointerdownEvent);
     window.dispatchEvent(new Event('scroll'));
+
     expect(handler).toHaveBeenCalledWith(strictEq(pointerdownEvent));
 
     const notPrimaryEvent = createPointerEvent('pointermove', { isPrimary: false });
     window.dispatchEvent(notPrimaryEvent);
     window.dispatchEvent(new Event('scroll'));
+
     expect(handler).not.toHaveBeenCalledWith(strictEq(notPrimaryEvent));
 
     const primaryEvent = createPointerEvent('pointermove');
     window.dispatchEvent(primaryEvent);
     window.dispatchEvent(new Event('scroll'));
+
     expect(handler).toHaveBeenCalledWith(strictEq(primaryEvent));
   });
 });

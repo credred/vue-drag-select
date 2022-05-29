@@ -45,7 +45,7 @@ export const elBox = {
   },
   relative(pos: Position): Position {
     return subtraction(pos, [elBox.validArea.left, elBox.validArea.top]);
-  }
+  },
 };
 
 export function setupContainer() {
@@ -65,7 +65,7 @@ export function setupContainer() {
 
   afterEach(() => {
     document.body.removeChild(el);
-    //@ts-ignore
+    //@ts-expect-error clean el
     el = undefined;
   });
 

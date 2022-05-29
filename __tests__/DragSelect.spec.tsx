@@ -17,6 +17,7 @@ describe('DragSelect component', () => {
       </DragSelect>
     );
     await click(...dragSelectBox.getOptionPosition(5));
+
     expect(selectedValue.value).toEqual(new Set([5]));
   });
 });
