@@ -15,7 +15,7 @@ export interface DragSelectProps<T = unknown> {
   /**
    * can draggable when dragstart event target on DragSelectOption
    */
-  draggableOnOption?: boolean;
+  draggableOnOption?: MaybeRef<boolean>;
   /**
    * the class names of drag area
    */

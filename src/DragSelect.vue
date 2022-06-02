@@ -29,8 +29,11 @@ const _p = defineProps({
     default: false,
   },
   draggableOnOption: {
-    type: Boolean,
     default: true,
+    validator(value) {
+      const plainValue = unref(value);
+      return typeof plainValue === 'boolean';
+    },
   },
   dragAreaClass: {
     type: String,
@@ -149,13 +152,17 @@ const { options, consumeClickedOnOption, consumePointerDownedOnOption } = useOpt
 const contentRef = ref<HTMLElement>();
 const containerRef = ref<HTMLElement>();
 
-const { areaStyle: areaRectStyle, dragged } = useDragToSelect({
+const {
+  areaStyle: areaRectStyle,
+  dragged,
+  isDragging,
+} = useDragToSelect({
   contentRef,
   containerRef,
   options,
   onChange,
   consumePointerDownedOnOption,
-  draggableOnOption: toRef(props, 'draggableOnOption'),
+  draggableOnOption: toRef(props, 'draggableOnOption') as Ref<boolean>,
 });
 
 const areaStyle = computed(() => ({
@@ -168,6 +175,10 @@ const onContentRefClick = () => {
   if (consumeClickedOnOption() || isDisableClick()) return;
   onChange(new Set());
 };
+
+defineExpose({
+  isDragging,
+});
 </script>
 
 <template>
