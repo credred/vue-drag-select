@@ -16,3 +16,11 @@ export type Rect = {
   width: number;
   height: number;
 };
+
+export type RequiredKeys<T> = keyof {
+  [P in keyof T as T[P] extends Required<T>[P] ? P : never]: T[P];
+};
+
+export type OptionalKeys<T> = keyof {
+  [P in keyof T as T[P] extends Required<T>[P] ? never : P]: T[P];
+};

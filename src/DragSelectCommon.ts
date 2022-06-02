@@ -1,5 +1,5 @@
 import { InjectionKey } from 'vue';
-import { MaybeRef } from './typings/internal';
+import { MaybeRef, OptionalKeys, RequiredKeys } from './typings/internal';
 
 export interface DragSelectProps<T = unknown> {
   /**
@@ -38,7 +38,11 @@ export interface DragSelectProps<T = unknown> {
   selectedOptionStyle?: Record<string, unknown>;
 }
 
-export type InnerDragSelectProps<T = unknown> = DragSelectProps<T> & Required<Omit<DragSelectProps<T>, 'modelValue'>>;
+export type InnerDragSelectProps<I extends DragSelectProps, T> = {
+  readonly [P in RequiredKeys<I>]-?: P extends keyof DragSelectProps ? NonNullable<DragSelectProps<T>[P]> : never;
+} & {
+  readonly [P in OptionalKeys<I>]?: P extends keyof DragSelectProps ? DragSelectProps<T>[P] : never;
+};
 
 export type OptionValue = unknown;
 

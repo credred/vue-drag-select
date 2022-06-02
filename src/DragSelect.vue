@@ -53,7 +53,7 @@ const _p = defineProps({
     default: () => ({}),
   },
 });
-const props = _p as InnerDragSelectProps<ArrayOrSet | undefined>;
+const props = _p as InnerDragSelectProps<typeof _p, ArrayOrSet>;
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: ArrayOrSet): void;
