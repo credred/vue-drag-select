@@ -45,4 +45,30 @@ describe('DragSelect component', () => {
       }
     });
   });
+
+  it('should not start drag from anywhere if disabled is true', async () => {
+    const dragSelectRef = ref();
+    const disabledRef = ref(false);
+
+    render(() => (
+      <DragSelect ref={dragSelectRef} disabled={disabledRef}>
+        {Array.from({ length: 9 }).map((_, index) => (
+          <DragSelectOption value={index}>{index}</DragSelectOption>
+        ))}
+      </DragSelect>
+    ));
+
+    await drag(dragSelectBox.getOptionPosition(5), dragSelectBox.getOptionPosition(6), {
+      onBeforeEnd() {
+        expect(dragSelectRef.value.isDragging).toBe(true);
+      }
+    });
+
+    disabledRef.value = true;
+    await drag(dragSelectBox.getOptionPosition(5), dragSelectBox.getOptionPosition(6), {
+      onBeforeEnd() {
+        expect(dragSelectRef.value.isDragging).toBe(false);
+      }
+    });
+  })
 });

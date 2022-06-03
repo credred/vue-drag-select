@@ -20,13 +20,15 @@ const _p = defineProps({
     },
   },
   /**
-   * TODO
    * whether DragSelect is disabled
    * @default false
    */
   disabled: {
-    type: Boolean,
     default: false,
+    validator(value) {
+      const plainValue = unref(value);
+      return typeof plainValue === 'boolean';
+    },
   },
   draggableOnOption: {
     default: true,
@@ -162,6 +164,7 @@ const {
   options,
   onChange,
   consumePointerDownedOnOption,
+  disabled: toRef(props, 'disabled') as Ref<boolean>,
   draggableOnOption: toRef(props, 'draggableOnOption') as Ref<boolean>,
 });
 
@@ -169,6 +172,11 @@ const areaStyle = computed(() => ({
   background: props.background,
   ...props.dragAreaStyle,
   ...areaRectStyle.value,
+}));
+
+const dragSelectClass = computed(() => ({
+  'drag-select': true,
+  'drag-select--disabled': props.disabled,
 }));
 
 const onContentRefClick = () => {
@@ -183,7 +191,7 @@ defineExpose({
 
 <template>
   <div ref="containerRef" class="drag-select__wrapper">
-    <div ref="contentRef" class="drag-select" style="position: relative" @click="onContentRefClick">
+    <div ref="contentRef" :class="dragSelectClass" style="position: relative" @click="onContentRefClick">
       <slot />
       <div class="drag-select__area" :class="props.dragAreaClass" :style="areaStyle" />
     </div>

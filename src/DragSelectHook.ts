@@ -11,6 +11,7 @@ interface UseDragToSelectConfig {
   options: Set<Option>;
   onChange: (selectedOptions: Set<unknown>) => void;
   draggableOnOption: MaybeRef<boolean>;
+  disabled: MaybeRef<boolean>;
   consumePointerDownedOnOption: () => boolean;
 }
 
@@ -20,6 +21,7 @@ export function useDragToSelect({
   options,
   onChange,
   draggableOnOption,
+  disabled,
   consumePointerDownedOnOption,
 }: UseDragToSelectConfig) {
   const pointPosition = ref<Position>([0, 0]);
@@ -30,6 +32,7 @@ export function useDragToSelect({
     isDragging,
     stop,
   } = useDragRect(contentRef, {
+    disabled,
     onStart(e) {
       dragged.value = false;
       if (!unref(draggableOnOption) && consumePointerDownedOnOption()) {

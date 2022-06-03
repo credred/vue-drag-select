@@ -11,7 +11,7 @@ export interface DragSelectProps<T = unknown> {
    * whether DragSelect is disabled
    * @default false
    */
-  disabled?: boolean;
+  disabled?: MaybeRef<boolean>;
   /**
    * can draggable when dragstart event target on DragSelectOption
    */

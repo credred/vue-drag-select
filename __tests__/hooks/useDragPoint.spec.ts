@@ -2,6 +2,7 @@ import { useDragPoints } from '@/hooks/useDragPoints';
 import { el, elBox, makeContainerScrollable, setupContainer } from '@test/_setup/setupContainer';
 import { drag, pointerdown } from '@test/_utils/simulate';
 import { addition } from '@test/_utils/math';
+import { nextTick, ref } from 'vue';
 
 describe('hooks/useDragPoint', () => {
   setupContainer();
@@ -44,5 +45,24 @@ describe('hooks/useDragPoint', () => {
     expect(isDragging.value).toBe(false);
     expect(fromPoint.value).toEqual([0, 0]);
     expect(toPoint.value).toEqual([0, 0]);
+  });
+
+  it('should not start dragging event if disabled', async () => {
+    const disabled = ref(true);
+    const startHandler = jasmine.createSpy('onStart');
+    useDragPoints(el, {
+      disabled,
+      onStart: startHandler,
+    });
+
+    await pointerdown(...elBox.validArea.from);
+
+    expect(startHandler).not.toHaveBeenCalled();
+
+    disabled.value = false;
+    await nextTick();
+    await pointerdown(...elBox.validArea.from);
+
+    expect(startHandler).toHaveBeenCalled();
   });
 });
