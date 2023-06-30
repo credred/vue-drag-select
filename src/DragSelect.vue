@@ -13,7 +13,8 @@ const _p = defineProps({
    * @alias v-model
    */
   modelValue: {
-    default: undefined,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+    default: undefined as any,
     validator(value) {
       const plainValue = unref(value);
       return plainValue === undefined || Array.isArray(plainValue) || plainValue instanceof Set;
