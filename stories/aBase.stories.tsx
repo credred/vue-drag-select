@@ -10,7 +10,7 @@ export default {
   component: DragSelect,
   // More on argTypes: https://storybook.js.org/docs/vue/api/argtypes
   argTypes: {
-    modelValue: {},
+    modelValue: [],
     background: { control: 'color', defaultValue: 'rgba(66, 153, 225, 0.5)' },
     draggableOnOption: { control: 'boolean', defaultValue: true },
   },
@@ -27,7 +27,7 @@ const Template = (args: any) => ({
   render() {
     return (
       <>
-        <div>selected: {args.modelValue.value.join(',')}</div>
+        <div>selected: {args.modelValue.join(',')}</div>
         <DragSelect {...(args)}>
           {Array(20)
             .fill(0)
@@ -59,7 +59,7 @@ const DragTemplate = (args: any) => ({
     return (
       <>
         <div>drag to outside select area to scroll</div>
-        <div>selected: {args.modelValue.value.join(',')}</div>
+        <div>selected: {args.modelValue.join(',')}</div>
         <DragSelect {...(args)}>
           {Array(100)
             .fill(0)

@@ -27,7 +27,7 @@ const Template = (args: any) => ({
   render() {
     return (
       <>
-        <div>selected: {args.modelValue.value.join(',')}</div>
+        <div>selected: {args.modelValue.join(',')}</div>
         <DragSelect {...(args)}>
           {Array(10)
             .fill(0)
