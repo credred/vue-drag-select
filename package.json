@@ -1,6 +1,6 @@
 {
   "name": "@coleqiu/vue-drag-select",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Drag select component for Vue3",
   "keywords": [
     "vue",
