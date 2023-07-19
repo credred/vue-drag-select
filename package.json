@@ -16,12 +16,6 @@
   "main": "./dist/vue-drag-select.umd.js",
   "types": "./dist/index.d.ts",
   "module": "./dist/vue-drag-select.es.js",
-  "exports": {
-    ".": {
-      "import": "./dist/vue-drag-select.es.js",
-      "require": "./dist/vue-drag-select.umd.js"
-    }
-  },
   "homepage": "https://github.com/credred/vue-drag-select#readme",
   "license": "MIT",
   "scripts": {
