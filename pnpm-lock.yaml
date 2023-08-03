@@ -190,7 +190,7 @@ packages:
       convert-source-map: 1.8.0
       debug: 4.3.4
       gensync: 1.0.0-beta.2
-      json5: 2.2.1
+      json5: 2.2.3
       semver: 6.3.0
     transitivePeerDependencies:
       - supports-color
@@ -3966,7 +3966,7 @@ packages:
       ts-dedent: 2.2.0
       type-fest: 2.19.0
       vue: 3.3.4
-      vue-component-type-helpers: 1.8.5
+      vue-component-type-helpers: 1.8.8
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -7196,12 +7196,6 @@ packages:
     resolution: {integrity: sha1-nbe1lJatPzz+8wp1FC0tkwrXJlE=}
     dev: true
 
-  /json5@2.2.1:
-    resolution: {integrity: sha512-1hqLFMSrGHRHxav9q9gNjJ5EXznIxGVO09xQRrwplcS8qs28pZ8s8hupZAmqDwZUmVZ2Qb2jnyPOWcDH8m8dlA==}
-    engines: {node: '>=6'}
-    hasBin: true
-    dev: true
-
   /json5@2.2.3:
     resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
     engines: {node: '>=6'}
@@ -7361,7 +7355,7 @@ packages:
     dependencies:
       big.js: 5.2.2
       emojis-list: 3.0.0
-      json5: 2.2.1
+      json5: 2.2.3
     dev: true
 
   /local-pkg@0.4.3:
@@ -9450,8 +9444,8 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /vue-component-type-helpers@1.8.5:
-    resolution: {integrity: sha512-SBNsskF7L5x604V1BN4ZzdTtWgCqo5cfl//YuBXtc3LLyPdFRqUeJn2Q+FPNmCtl23LBT2tH79M/uv13fL0MgQ==}
+  /vue-component-type-helpers@1.8.8:
+    resolution: {integrity: sha512-Ohv9HQY92nSbpReC6WhY0X4YkOszHzwUHaaN/lev5tHQLM1AEw+LrLeB2bIGIyKGDU7ZVrncXcv/oBny4rjbYg==}
     dev: true
 
   /vue-docgen-api@4.73.0(vue@3.3.4):
