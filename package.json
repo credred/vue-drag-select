@@ -40,7 +40,7 @@
     "@storybook/vue3": "^7.0.24",
     "@storybook/vue3-vite": "^7.0.24",
     "@testing-library/dom": "^8.13.0",
-    "@testing-library/user-event": "^14.1.1",
+    "@testing-library/user-event": "^14.5.1",
     "@testing-library/vue": "^6.4.2",
     "@types/jasmine": "^4.0.3",
     "@types/karma": "^6.3.3",

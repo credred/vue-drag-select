@@ -1,6 +1,8 @@
 import { InjectionKey } from 'vue';
 import { MaybeRef, OptionalKeys, RequiredKeys } from './typings/internal';
 
+export type ModifierKey = 'meta' | 'shift' | 'ctrl' | 'alt';
+
 export interface DragSelectProps<T = unknown> {
   /**
    * binding value
@@ -36,6 +38,19 @@ export interface DragSelectProps<T = unknown> {
    * the selected styles of selected DragSelectOption
    */
   selectedOptionStyle?: Record<string, unknown>;
+  /**
+   * whether to keep the previously selected.
+   * Only need to use when you need to manually control when to enable multiple selection, otherwise use activeMultipleKeys
+   */
+  multiple?: MaybeRef<boolean>;
+  /**
+   * after pressing a certain key, multiple mode will be activated
+   */
+  activeMultipleKeys?: MaybeRef<ModifierKey[]>;
+  /**
+   * in multiple mode, deselect options that are repeatedly selected
+   */
+  deselectRepeated?: MaybeRef<boolean>;
 }
 
 export type InnerDragSelectProps<I extends DragSelectProps, T> = {

@@ -80,6 +80,9 @@ dragAreaClass | the class names of drag area | string | --
 dragAreaStyle | the class styles of drag area | string | --
 selectedOptionClass | the class names of selected DragSelectOption | string | --
 selectedOptionStyle | the selected styles of selected DragSelectOption | string | --
+multiple | whether to keep the previously selected | boolean | --
+activeMultipleKeys | after pressing a certain key, multiple mode will be activated |  'meta' \| 'shift' \| 'ctrl' \| 'alt' | 'meta' \| 'ctrl' \| 'shift'
+deselectRepeated | in multiple mode, deselect options that are repeatedly selected | boolean | --
 <!-- disabled | whether DragSelect is disabled | boolean | false -->
 
 <!-- ### DragSelect Methods

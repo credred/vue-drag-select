@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, provide, Ref, ref, toRef, unref } from 'vue';
-import { InnerDragSelectProps, forOptionActionKey, Option } from './DragSelectCommon';
+import { computed, PropType, provide, Ref, ref, toRef, unref } from 'vue';
+import { InnerDragSelectProps, ModifierKey, forOptionActionKey, Option } from './DragSelectCommon';
 import { useClickToSelect, useDragToSelect } from './DragSelectHook';
 import { MaybeRef } from './typings/internal';
-import { setIsEqual } from './utils/setIsEqual';
+import { useCalcSelectedOptions } from './hooks/useCalcSelectedOptions';
+import { useControllableValue } from './hooks/useControllableValue';
 
 type ArrayOrSet<T = unknown> = Array<T> | Set<T>;
 
@@ -58,11 +59,29 @@ const _p = defineProps({
     type: Object,
     default: () => ({}),
   },
+  multiple: {
+    type: Boolean,
+    default: undefined,
+  },
+  defaultMultiple: {
+    type: Boolean,
+    default: undefined,
+  },
+  activeMultipleKeys: {
+    type: Array as PropType<ModifierKey[]>,
+    default: () => ['ctrl', 'meta', 'shift'],
+  },
+  deselectRepeated: {
+    type: Boolean,
+    default: true,
+  },
 });
+
 const props = _p as InnerDragSelectProps<typeof _p, ArrayOrSet>;
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: ArrayOrSet): void;
+  (event: 'update:multiple', value: boolean): void;
   (event: 'change', value: ArrayOrSet): void;
 }>();
 
@@ -135,9 +154,24 @@ const { selectedOptions: currentSelectedOptions, emitModelValue } = useModelValu
   toRef(props, 'modelValue') as Ref<ArrayOrSet | undefined>
 );
 
+const [multiple, emitMultiple] = useControllableValue(props, emit, {
+  valuePropName: 'multiple',
+  defaultValuePropName: 'defaultMultiple',
+  defaultValue: false,
+  trigger: 'update:multiple',
+});
+
+const calcSelectedOptionsMethod = useCalcSelectedOptions(currentSelectedOptions, {
+  multiple: multiple,
+  activeMultipleKeys: toRef(props, 'activeMultipleKeys') as Ref<ModifierKey[]>,
+  deselectRepeated: toRef(props, 'deselectRepeated') as Ref<boolean>,
+  emitMultiple,
+});
+
 const onChange = (selectedOptions: Set<unknown>) => {
-  if (!setIsEqual(selectedOptions, unref(currentSelectedOptions))) {
-    emitModelValue(selectedOptions);
+  const newSelectedOptions = calcSelectedOptionsMethod.calcNewSelectedOptions(selectedOptions);
+  if (newSelectedOptions) {
+    emitModelValue(newSelectedOptions);
   }
 };
 
@@ -164,6 +198,8 @@ const {
   containerRef,
   options,
   onChange,
+  onStart: calcSelectedOptionsMethod.onStart,
+  onEnd: calcSelectedOptionsMethod.onEnd,
   consumePointerDownedOnOption,
   disabled: toRef(props, 'disabled') as Ref<boolean>,
   draggableOnOption: toRef(props, 'draggableOnOption') as Ref<boolean>,
