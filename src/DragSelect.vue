@@ -4,7 +4,7 @@ import { InnerDragSelectProps, ModifierKey, forOptionActionKey, Option } from '.
 import { useClickToSelect, useDragToSelect } from './DragSelectHook';
 import { MaybeRef } from './typings/internal';
 import { useCalcSelectedOptions } from './hooks/useCalcSelectedOptions';
-import { useControllableValue } from './hooks/useControllableValue';
+import { useMultiple } from './hooks/useMultiple';
 
 type ArrayOrSet<T = unknown> = Array<T> | Set<T>;
 
@@ -154,18 +154,13 @@ const { selectedOptions: currentSelectedOptions, emitModelValue } = useModelValu
   toRef(props, 'modelValue') as Ref<ArrayOrSet | undefined>
 );
 
-const [multiple, emitMultiple] = useControllableValue(props, emit, {
-  valuePropName: 'multiple',
-  defaultValuePropName: 'defaultMultiple',
-  defaultValue: false,
-  trigger: 'update:multiple',
+const { multiple, ...multipleMethod } = useMultiple(props, emit, {
+  activeMultipleKeys: toRef(props, 'activeMultipleKeys') as Ref<ModifierKey[]>,
 });
 
 const calcSelectedOptionsMethod = useCalcSelectedOptions(currentSelectedOptions, {
   multiple: multiple,
-  activeMultipleKeys: toRef(props, 'activeMultipleKeys') as Ref<ModifierKey[]>,
   deselectRepeated: toRef(props, 'deselectRepeated') as Ref<boolean>,
-  emitMultiple,
 });
 
 const onChange = (selectedOptions: Set<unknown>) => {
@@ -198,8 +193,14 @@ const {
   containerRef,
   options,
   onChange,
-  onStart: calcSelectedOptionsMethod.onStart,
-  onEnd: calcSelectedOptionsMethod.onEnd,
+  onStart: (e) => {
+    calcSelectedOptionsMethod.onStart();
+    multipleMethod.onStart(e);
+  },
+  onEnd: () => {
+    calcSelectedOptionsMethod.onEnd();
+    multipleMethod.onEnd();
+  },
   consumePointerDownedOnOption,
   disabled: toRef(props, 'disabled') as Ref<boolean>,
   draggableOnOption: toRef(props, 'draggableOnOption') as Ref<boolean>,
