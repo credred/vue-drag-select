@@ -87,14 +87,18 @@ export function useDragToSelect({
 interface UseClickToSelectConfig {
   onChange: (selectedOptions: Set<unknown>) => void;
   isDisableClick: () => boolean;
+  onStart: (e: PointerEvent | MouseEvent) => void;
+  onEnd: (e: PointerEvent | MouseEvent) => void;
 }
 
-export function useClickToSelect({ onChange, isDisableClick }: UseClickToSelectConfig) {
-  const onClickToSelect = (option: Option) => {
+export function useClickToSelect({ onChange, isDisableClick, onStart, onEnd }: UseClickToSelectConfig) {
+  const onClickToSelect = (option: Option, e: MouseEvent) => {
     if (isDisableClick()) return;
 
     const newSelectedOptions = new Set([option.value]);
+    onStart(e);
     onChange(newSelectedOptions);
+    onEnd(e);
   };
 
   return onClickToSelect;

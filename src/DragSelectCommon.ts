@@ -73,7 +73,7 @@ interface ForOptionAction {
   isSelected: (option: MaybeRef<Option>) => boolean;
   add: (option: MaybeRef<Option>) => void;
   delete: (option: MaybeRef<Option>) => void;
-  onClick: (option: MaybeRef<Option>) => void;
+  onClick: (option: MaybeRef<Option>, e: MouseEvent) => void;
   onPointerDown: () => void;
 }
 

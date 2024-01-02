@@ -104,7 +104,10 @@ function useModelValue(modelValueRef: Ref<ArrayOrSet | undefined>) {
   return { selectedOptions, emitModelValue };
 }
 
-function useOptions(selectedOptions: MaybeRef<Set<unknown>>, onClickToSelect: (option: Option) => void) {
+function useOptions(
+  selectedOptions: MaybeRef<Set<unknown>>,
+  onClickToSelect: (option: Option, e: PointerEvent | MouseEvent) => void
+) {
   const options = new Set<Option>();
   const clickedOnOption = ref(false);
   const pointerDownedOnOption = ref(false);
@@ -122,8 +125,8 @@ function useOptions(selectedOptions: MaybeRef<Set<unknown>>, onClickToSelect: (o
     delete(option) {
       options.delete(unref(option));
     },
-    onClick(option) {
-      onClickToSelect(unref(option));
+    onClick(option, e) {
+      onClickToSelect(unref(option), e);
       clickedOnOption.value = true;
     },
     onPointerDown() {
@@ -174,7 +177,18 @@ const isDisableClick = () => {
   return !!dragged.value;
 };
 
-const onClickToSelect = useClickToSelect({ onChange, isDisableClick });
+const onClickToSelect = useClickToSelect({
+  onChange,
+  isDisableClick,
+  onStart: (e) => {
+    calcSelectedOptionsMethod.onStart();
+    multipleMethod.onStart(e);
+  },
+  onEnd: () => {
+    calcSelectedOptionsMethod.onEnd();
+    multipleMethod.onEnd();
+  },
+});
 
 const { options, consumeClickedOnOption, consumePointerDownedOnOption } = useOptions(
   currentSelectedOptions,

@@ -39,8 +39,8 @@ const optionClass = computed(() => ({
   [props.selectedClass]: isSelected.value,
 }));
 
-const onClick = () => {
-  dragSelectAction?.onClick(option.value);
+const onClick = (e: MouseEvent) => {
+  dragSelectAction?.onClick(option.value, e);
 };
 
 const onPointerDown = () => {

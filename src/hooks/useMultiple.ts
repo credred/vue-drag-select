@@ -27,7 +27,7 @@ export const useMultiple = (
     trigger: 'update:multiple',
   });
 
-  const onStart = (e: PointerEvent) => {
+  const onStart = (e: PointerEvent | MouseEvent) => {
     emitMultiple(unref(activeMultipleKeys).some((key) => !!e[keyMap[key]]));
   };
   const onEnd = () => {
