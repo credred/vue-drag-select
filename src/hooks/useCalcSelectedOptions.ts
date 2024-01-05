@@ -31,7 +31,7 @@ export const useCalcSelectedOptions = (
         return new Set([...selectedOptions, ...unref(prevSelectedOptions)]);
       }
     } else {
-      if (!setIsEqual(selectedOptions, unref(prevSelectedOptions))) {
+      if (!setIsEqual(selectedOptions, unref(currentSelectedOptions))) {
         return selectedOptions;
       }
     }

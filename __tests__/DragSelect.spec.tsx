@@ -3,7 +3,7 @@ import DragSelectOption from '@/DragSelectOption.vue';
 import { render } from '@testing-library/vue';
 import { ref } from 'vue';
 import { dragSelectBox } from './_setup/style';
-import { drag, click } from '@test/_utils/simulate';
+import { drag, click, pointerdown, slideMove } from '@test/_utils/simulate';
 import userEvent from '@testing-library/user-event';
 
 describe('DragSelect component', () => {
@@ -71,7 +71,32 @@ describe('DragSelect component', () => {
         expect(dragSelectRef.value.isDragging).toBe(false);
       }
     });
-  })
+  });
+
+  it('should be correct when selecting the same item as last time', async () => {
+    const selectedValue = ref<Set<number>>();
+
+    render(() => (
+      <DragSelect vModel={selectedValue.value}>
+        {Array.from({ length: 9 }).map((_, index) => (
+          <DragSelectOption value={index}>{index}</DragSelectOption>
+        ))}
+      </DragSelect>
+    ));
+
+    await click(...dragSelectBox.getOptionPosition(4));
+
+    const from = dragSelectBox.getOptionPosition(4);
+    const to1 = dragSelectBox.getOptionPosition(8);
+    const to2 = dragSelectBox.getOptionPosition(4);
+    const pointerup = await pointerdown(...from, null);
+    await slideMove(from, to1, {});
+
+    await slideMove(to1, to2, {});
+    await pointerup(...to2);
+
+    expect(selectedValue.value).toEqual(new Set([4]));
+  });
 
   describe('multiple mode', () => {
     it('active by press control key', async () => {
