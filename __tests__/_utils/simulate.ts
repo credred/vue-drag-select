@@ -44,9 +44,9 @@ export async function pointerdown(x: number, y: number, target?: Element | null,
   };
 }
 
-export async function click(x: number, y: number) {
+export async function click(x: number, y: number, user?: UserEvent) {
   const downTarget = document.elementFromPoint(x, y);
-  const pointerup = await pointerdown(x, y, downTarget);
+  const pointerup = await pointerdown(x, y, downTarget, user);
   const upTarget = document.elementFromPoint(x, y);
   await pointerup(x, y, upTarget);
   // pointerdown target sometimes different from the pointer up target
@@ -67,7 +67,7 @@ export async function click(x: number, y: number) {
       }
       downTargetParent = downTargetParent.parentElement;
     }
-    await userEvent.click(commonParent);
+    await (user || userEvent).click(commonParent);
   }
 }
 
@@ -83,7 +83,7 @@ interface DragOption {
   onEnd?: () => void;
 }
 
-async function slideMove(from: Position, to: Position, option: DragOption) {
+export async function slideMove(from: Position, to: Position, option: DragOption) {
   const { duration = 100, interval = 20 } = option;
   const [[x1, y1], [x2, y2]] = [from, to];
   const num = duration / interval;
