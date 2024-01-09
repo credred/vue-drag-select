@@ -1,4 +1,4 @@
-import { watch, ref, unref } from 'vue';
+import { watch, ref, unref, nextTick } from 'vue';
 import { Option } from './DragSelectCommon';
 import { useDragRect } from './hooks/useDragRect';
 import useAutoScrollByPoint from './hooks/useAutoScrollByPoint';
@@ -97,8 +97,11 @@ export function useClickToSelect({ onChange, isDisableClick, onStart, onEnd }: U
 
     const newSelectedOptions = new Set([option.value]);
     onStart(e);
-    onChange(newSelectedOptions);
-    onEnd(e);
+    // onStart may emit update:multiple event, so multiple may not be change immediately.
+    void nextTick(() => {
+      onChange(newSelectedOptions);
+      onEnd(e);
+    });
   };
 
   return onClickToSelect;

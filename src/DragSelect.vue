@@ -181,11 +181,9 @@ const onClickToSelect = useClickToSelect({
   onChange,
   isDisableClick,
   onStart: (e) => {
-    calcSelectedOptionsMethod.onStart();
     multipleMethod.onStart(e);
   },
   onEnd: () => {
-    calcSelectedOptionsMethod.onEnd();
     multipleMethod.onEnd();
   },
 });
