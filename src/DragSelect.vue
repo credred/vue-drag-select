@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, PropType, provide, Ref, ref, toRef, unref } from 'vue';
+import { computed, nextTick, PropType, provide, Ref, ref, toRef, unref } from 'vue';
 import { InnerDragSelectProps, ModifierKey, forOptionActionKey, Option } from './DragSelectCommon';
 import { useClickToSelect, useDragToSelect } from './DragSelectHook';
 import { MaybeRef } from './typings/internal';
@@ -229,9 +229,14 @@ const dragSelectClass = computed(() => ({
   'drag-select--disabled': props.disabled,
 }));
 
-const onContentRefClick = () => {
+const onContentRefClick = (e: MouseEvent) => {
   if (consumeClickedOnOption() || isDisableClick()) return;
-  onChange(new Set());
+
+  multipleMethod.onStart(e);
+  void nextTick(() => {
+    onChange(new Set());
+    multipleMethod.onEnd();
+  });
 };
 
 defineExpose({
