@@ -109,7 +109,7 @@ export const Multiple: StoryFn = MultipleTemplate.bind({});
 Multiple.storyName = 'multiple';
 Multiple.args = {
   modelValue: ref([]),
-  multiple: ref(true),
+  multiple: ref(false),
   'onUpdate:multiple': (v: any[]) => {
     Multiple.args!.multiple.value = v;
   },
