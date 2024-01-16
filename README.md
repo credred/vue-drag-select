@@ -76,6 +76,8 @@ Attribute | Description | Type | Default
 modelValue / v-model | binding value | Array<string> \| Set<string \| number> | --(required)
 background | background color of drag area, 'none' represent hide this style to avoid override background color of class | string | rgba(66, 153, 225, 0.5 |
 draggableOnOption | can draggable when dragstart event target on DragSelectOption | boolean | true
+clickOptionToSelect | whether to enable the click item selection function | boolean | true
+clickBlankToClear | whether to enable clicking on blank content to clear the option | boolean | true
 dragAreaClass | the class names of drag area | string | --
 dragAreaStyle | the class styles of drag area | string | --
 selectedOptionClass | the class names of selected DragSelectOption | string | --
