@@ -39,6 +39,14 @@ const _p = defineProps({
       return typeof plainValue === 'boolean';
     },
   },
+  clickOptionToSelect: {
+    type: Boolean,
+    default: true,
+  },
+  clickBlankToClear: {
+    type: Boolean,
+    default: true,
+  },
   dragAreaClass: {
     type: String,
     default: '',
@@ -177,9 +185,17 @@ const isDisableClick = () => {
   return !!dragged.value;
 };
 
+const isDisableClickOption = () => {
+  return !unref(props.clickOptionToSelect) || isDisableClick();
+};
+
+const isDisableClickBlank = () => {
+  return !unref(props.clickBlankToClear) || isDisableClick();
+};
+
 const onClickToSelect = useClickToSelect({
   onChange,
-  isDisableClick,
+  isDisableClick: isDisableClickOption,
   onStart: (e) => {
     multipleMethod.onStart(e);
   },
@@ -230,7 +246,7 @@ const dragSelectClass = computed(() => ({
 }));
 
 const onContentRefClick = (e: MouseEvent) => {
-  if (consumeClickedOnOption() || isDisableClick()) return;
+  if (consumeClickedOnOption() || isDisableClickBlank()) return;
 
   multipleMethod.onStart(e);
   void nextTick(() => {

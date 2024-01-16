@@ -19,6 +19,16 @@ export interface DragSelectProps<T = unknown> {
    */
   draggableOnOption?: MaybeRef<boolean>;
   /**
+   * whether to enable the click item selection function
+   * @default true
+   */
+  clickOptionToSelect?: MaybeRef<boolean>;
+  /**
+   * whether to enable clicking on blank content to clear the option
+   * @default true
+   */
+  clickBlankToClear?: MaybeRef<boolean>;
+  /**
    * the class names of drag area
    */
   dragAreaClass?: string;

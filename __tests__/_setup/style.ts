@@ -12,10 +12,10 @@ export const dragSelectBox = {
 
   optionCount: 9,
   getOptionPosition(idx: number): Position {
-    const [row, col] = [Math.floor(idx / 3) + 0.5, (idx % 3) + 0.5];
+    const [row, col] = [Math.floor(idx / 3), idx % 3];
     return [
-      dragSelectBox.margin + dragSelectBox.border + dragSelectBox.gap * col + col * dragSelectBox.optionWidth,
-      dragSelectBox.margin + dragSelectBox.border + dragSelectBox.gap * row + row * dragSelectBox.optionHeight,
+      dragSelectBox.margin + dragSelectBox.border + dragSelectBox.gap * col + (col + 0.5) * dragSelectBox.optionWidth,
+      dragSelectBox.margin + dragSelectBox.border + dragSelectBox.gap * row + (row + 0.5) * dragSelectBox.optionHeight,
     ];
   },
 };
