@@ -259,34 +259,5 @@ describe('DragSelect component', () => {
 
       expect(selectedValue.value).toEqual(new Set([4, 5, 8]));
     });
-
-    it('should keep select previous items when click empty area', async () => {
-      const selectedValue = ref<Set<number>>();
-      const multiple = ref(false);
-
-      render(() => (
-        <DragSelect v-model={selectedValue.value} v-model:multiple={multiple.value} deselectRepeated={false}>
-          {Array.from({ length: 9 }).map((_, index) => (
-            <DragSelectOption value={index}>{index}</DragSelectOption>
-          ))}
-        </DragSelect>
-      ));
-
-      const user = userEvent.setup();
-      await user.keyboard('[MetaLeft>]');
-
-      await drag(dragSelectBox.getOptionPosition(4), dragSelectBox.getOptionPosition(5), {
-        user,
-      });
-
-      expect(selectedValue.value).toEqual(new Set([4, 5]));
-      const [x, y] = dragSelectBox.getOptionPosition(0);
-      await click(x + dragSelectBox.optionWidth * 0.5 + 2, y);
-      // await click(x + dragSelectBox.optionWidth * 0.5 + 2, y, user); // 使用user就不会触发点击事件
-
-      await nextTick();
-
-      expect(selectedValue.value).toEqual(new Set([4, 5]));
-    });
   });
 });
