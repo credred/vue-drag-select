@@ -76,10 +76,15 @@ Attribute | Description | Type | Default
 modelValue / v-model | binding value | Array<string> \| Set<string \| number> | --(required)
 background | background color of drag area, 'none' represent hide this style to avoid override background color of class | string | rgba(66, 153, 225, 0.5 |
 draggableOnOption | can draggable when dragstart event target on DragSelectOption | boolean | true
+clickOptionToSelect | whether to enable the click item selection function | boolean | true
+clickBlankToClear | whether to enable clicking on blank content to clear the option | boolean | true
 dragAreaClass | the class names of drag area | string | --
 dragAreaStyle | the class styles of drag area | string | --
 selectedOptionClass | the class names of selected DragSelectOption | string | --
 selectedOptionStyle | the selected styles of selected DragSelectOption | string | --
+multiple | whether to keep the previously selected | boolean | --
+activeMultipleKeys | after pressing a certain key, multiple mode will be activated |  'meta' \| 'shift' \| 'ctrl' \| 'alt' | 'meta' \| 'ctrl' \| 'shift'
+deselectRepeated | in multiple mode, deselect options that are repeatedly selected | boolean | --
 <!-- disabled | whether DragSelect is disabled | boolean | false -->
 
 <!-- ### DragSelect Methods

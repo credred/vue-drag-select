@@ -1,5 +1,5 @@
 import { Position } from '@/typings/internal';
-import userEvent from '@testing-library/user-event';
+import userEvent, { UserEvent } from '@testing-library/user-event';
 
 export function pointerMove(x: number, y: number) {
   return userEvent.pointer({
@@ -12,8 +12,8 @@ export function pointerMove(x: number, y: number) {
   });
 }
 
-export async function pointerdown(x: number, y: number, target?: Element | null) {
-  const user = userEvent.setup();
+export async function pointerdown(x: number, y: number, target?: Element | null, _user?: UserEvent) {
+  const user = _user || userEvent.setup();
 
   const keyDef = {
     name: 'pointerdown',
@@ -44,12 +44,14 @@ export async function pointerdown(x: number, y: number, target?: Element | null)
   };
 }
 
-export async function click(x: number, y: number) {
+export async function click(x: number, y: number, user?: UserEvent) {
   const downTarget = document.elementFromPoint(x, y);
-  const pointerup = await pointerdown(x, y, downTarget);
+  const pointerup = await pointerdown(x, y, downTarget, user);
   const upTarget = document.elementFromPoint(x, y);
   await pointerup(x, y, upTarget);
-  if (downTarget && upTarget && downTarget !== upTarget) {
+  // pointerdown target sometimes different from the pointer up target
+  // browser will pick their common parent as click event target
+  if (downTarget && upTarget) {
     let commonParent: Element = document.documentElement;
     const upTargetParents: Set<Element> = new Set();
     let upTargetParent: Element | null = upTarget;
@@ -65,13 +67,12 @@ export async function click(x: number, y: number) {
       }
       downTargetParent = downTargetParent.parentElement;
     }
-    // user-event not trigger click event if downTarget is not upTarget
-    // but browser will pick their common parent as click event target
-    await userEvent.click(commonParent);
+    await (user || userEvent).click(commonParent);
   }
 }
 
 interface DragOption {
+  user?: UserEvent;
   duration?: number;
   interval?: number;
   onBeforeStart?: () => void;
@@ -82,7 +83,7 @@ interface DragOption {
   onEnd?: () => void;
 }
 
-async function slideMove(from: Position, to: Position, option: DragOption) {
+export async function slideMove(from: Position, to: Position, option: DragOption) {
   const { duration = 100, interval = 20 } = option;
   const [[x1, y1], [x2, y2]] = [from, to];
   const num = duration / interval;
@@ -99,7 +100,7 @@ async function slideMove(from: Position, to: Position, option: DragOption) {
 
 export async function drag(from: Position, to: Position, option: DragOption) {
   option.onBeforeStart?.();
-  const pointerup = await pointerdown(...from);
+  const pointerup = await pointerdown(...from, null, option.user);
   option.onStart?.();
   await slideMove(from, to, option);
   option.onBeforeEnd?.();

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, provide, Ref, ref, toRef, unref } from 'vue';
-import { InnerDragSelectProps, forOptionActionKey, Option } from './DragSelectCommon';
+import { computed, nextTick, PropType, provide, Ref, ref, toRef, unref } from 'vue';
+import { InnerDragSelectProps, ModifierKey, forOptionActionKey, Option } from './DragSelectCommon';
 import { useClickToSelect, useDragToSelect } from './DragSelectHook';
 import { MaybeRef } from './typings/internal';
-import { setIsEqual } from './utils/setIsEqual';
+import { useCalcSelectedOptions } from './hooks/useCalcSelectedOptions';
+import { useMultiple } from './hooks/useMultiple';
 
 type ArrayOrSet<T = unknown> = Array<T> | Set<T>;
 
@@ -38,6 +39,14 @@ const _p = defineProps({
       return typeof plainValue === 'boolean';
     },
   },
+  clickOptionToSelect: {
+    type: Boolean,
+    default: true,
+  },
+  clickBlankToClear: {
+    type: Boolean,
+    default: true,
+  },
   dragAreaClass: {
     type: String,
     default: '',
@@ -58,11 +67,29 @@ const _p = defineProps({
     type: Object,
     default: () => ({}),
   },
+  multiple: {
+    type: Boolean,
+    default: undefined,
+  },
+  defaultMultiple: {
+    type: Boolean,
+    default: undefined,
+  },
+  activeMultipleKeys: {
+    type: Array as PropType<ModifierKey[]>,
+    default: () => ['ctrl', 'meta', 'shift'],
+  },
+  deselectRepeated: {
+    type: Boolean,
+    default: true,
+  },
 });
+
 const props = _p as InnerDragSelectProps<typeof _p, ArrayOrSet>;
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: ArrayOrSet): void;
+  (event: 'update:multiple', value: boolean): void;
   (event: 'change', value: ArrayOrSet): void;
 }>();
 
@@ -85,7 +112,10 @@ function useModelValue(modelValueRef: Ref<ArrayOrSet | undefined>) {
   return { selectedOptions, emitModelValue };
 }
 
-function useOptions(selectedOptions: MaybeRef<Set<unknown>>, onClickToSelect: (option: Option) => void) {
+function useOptions(
+  selectedOptions: MaybeRef<Set<unknown>>,
+  onClickToSelect: (option: Option, e: PointerEvent | MouseEvent) => void
+) {
   const options = new Set<Option>();
   const clickedOnOption = ref(false);
   const pointerDownedOnOption = ref(false);
@@ -103,8 +133,8 @@ function useOptions(selectedOptions: MaybeRef<Set<unknown>>, onClickToSelect: (o
     delete(option) {
       options.delete(unref(option));
     },
-    onClick(option) {
-      onClickToSelect(unref(option));
+    onClick(option, e) {
+      onClickToSelect(unref(option), e);
       clickedOnOption.value = true;
     },
     onPointerDown() {
@@ -135,9 +165,19 @@ const { selectedOptions: currentSelectedOptions, emitModelValue } = useModelValu
   toRef(props, 'modelValue') as Ref<ArrayOrSet | undefined>
 );
 
+const { multiple, ...multipleMethod } = useMultiple(props, emit, {
+  activeMultipleKeys: toRef(props, 'activeMultipleKeys') as Ref<ModifierKey[]>,
+});
+
+const calcSelectedOptionsMethod = useCalcSelectedOptions(currentSelectedOptions, {
+  multiple: multiple,
+  deselectRepeated: toRef(props, 'deselectRepeated') as Ref<boolean>,
+});
+
 const onChange = (selectedOptions: Set<unknown>) => {
-  if (!setIsEqual(selectedOptions, unref(currentSelectedOptions))) {
-    emitModelValue(selectedOptions);
+  const newSelectedOptions = calcSelectedOptionsMethod.calcNewSelectedOptions(selectedOptions);
+  if (newSelectedOptions) {
+    emitModelValue(newSelectedOptions);
   }
 };
 
@@ -145,7 +185,24 @@ const isDisableClick = () => {
   return !!dragged.value;
 };
 
-const onClickToSelect = useClickToSelect({ onChange, isDisableClick });
+const isDisableClickOption = () => {
+  return !unref(props.clickOptionToSelect) || isDisableClick();
+};
+
+const isDisableClickBlank = () => {
+  return !unref(props.clickBlankToClear) || isDisableClick();
+};
+
+const onClickToSelect = useClickToSelect({
+  onChange,
+  isDisableClick: isDisableClickOption,
+  onStart: (e) => {
+    multipleMethod.onStart(e);
+  },
+  onEnd: () => {
+    multipleMethod.onEnd();
+  },
+});
 
 const { options, consumeClickedOnOption, consumePointerDownedOnOption } = useOptions(
   currentSelectedOptions,
@@ -164,6 +221,14 @@ const {
   containerRef,
   options,
   onChange,
+  onStart: (e) => {
+    calcSelectedOptionsMethod.onStart();
+    multipleMethod.onStart(e);
+  },
+  onEnd: () => {
+    calcSelectedOptionsMethod.onEnd();
+    multipleMethod.onEnd();
+  },
   consumePointerDownedOnOption,
   disabled: toRef(props, 'disabled') as Ref<boolean>,
   draggableOnOption: toRef(props, 'draggableOnOption') as Ref<boolean>,
@@ -180,9 +245,14 @@ const dragSelectClass = computed(() => ({
   'drag-select--disabled': props.disabled,
 }));
 
-const onContentRefClick = () => {
-  if (consumeClickedOnOption() || isDisableClick()) return;
-  onChange(new Set());
+const onContentRefClick = (e: MouseEvent) => {
+  if (consumeClickedOnOption() || isDisableClickBlank()) return;
+
+  multipleMethod.onStart(e);
+  void nextTick(() => {
+    onChange(new Set());
+    multipleMethod.onEnd();
+  });
 };
 
 defineExpose({

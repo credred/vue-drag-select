@@ -23,7 +23,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - run: npm run build
-      - run: npm publish --access public
+      - name: Build
+        run: npm run build
+
+      - name: publish on Pre-Release
+        if: 'github.event.prerelease'
+        run: npm publish --access public --tag beta 
+      - name: publish on Release
+        if: '!github.event.prerelease'
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

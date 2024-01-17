@@ -80,3 +80,41 @@ Drag.args = {
   },
   style: { height: '300px', overflow: 'auto', border: '1px solid #d83512' }
 };
+
+
+const MultipleTemplate = (args: any) => ({
+  // Components used in your story `template` are defined in the `components` object
+  components: { DragSelect, DragSelectOption },
+  // The story's `args` need to be mapped into the template through the `setup()` method
+  setup() {
+    return { args };
+  },
+  render() {
+    return (
+      <>
+        <div>press ctrl/shift key to open multiple mode</div>
+        <div>selected: {args.modelValue.join(',')}</div>
+        <DragSelect {...(args)}>
+          {Array(100)
+            .fill(0)
+            .map((v, index) => (
+              <DragSelectOption value={index}>{index}</DragSelectOption>
+            ))}
+        </DragSelect>
+      </>);
+  },
+});
+
+export const Multiple: StoryFn = MultipleTemplate.bind({});
+Multiple.storyName = 'multiple';
+Multiple.args = {
+  modelValue: ref([]),
+  multiple: ref(false),
+  'onUpdate:multiple': (v: any[]) => {
+    Multiple.args!.multiple.value = v;
+  },
+  'onUpdate:modelValue': (v: any[]) => {
+    Multiple.args!.modelValue.value = v;
+  },
+  style: { height: '300px', overflow: 'auto', border: '1px solid #d83512' }
+};

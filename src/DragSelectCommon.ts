@@ -1,6 +1,8 @@
 import { InjectionKey } from 'vue';
 import { MaybeRef, OptionalKeys, RequiredKeys } from './typings/internal';
 
+export type ModifierKey = 'meta' | 'shift' | 'ctrl' | 'alt';
+
 export interface DragSelectProps<T = unknown> {
   /**
    * binding value
@@ -16,6 +18,16 @@ export interface DragSelectProps<T = unknown> {
    * can draggable when dragstart event target on DragSelectOption
    */
   draggableOnOption?: MaybeRef<boolean>;
+  /**
+   * whether to enable the click item selection function
+   * @default true
+   */
+  clickOptionToSelect?: MaybeRef<boolean>;
+  /**
+   * whether to enable clicking on blank content to clear the option
+   * @default true
+   */
+  clickBlankToClear?: MaybeRef<boolean>;
   /**
    * the class names of drag area
    */
@@ -36,6 +48,19 @@ export interface DragSelectProps<T = unknown> {
    * the selected styles of selected DragSelectOption
    */
   selectedOptionStyle?: Record<string, unknown>;
+  /**
+   * whether to keep the previously selected.
+   * Only need to use when you need to manually control when to enable multiple selection, otherwise use activeMultipleKeys
+   */
+  multiple?: MaybeRef<boolean>;
+  /**
+   * after pressing a certain key, multiple mode will be activated
+   */
+  activeMultipleKeys?: MaybeRef<ModifierKey[]>;
+  /**
+   * in multiple mode, deselect options that are repeatedly selected
+   */
+  deselectRepeated?: MaybeRef<boolean>;
 }
 
 export type InnerDragSelectProps<I extends DragSelectProps, T> = {
@@ -58,7 +83,7 @@ interface ForOptionAction {
   isSelected: (option: MaybeRef<Option>) => boolean;
   add: (option: MaybeRef<Option>) => void;
   delete: (option: MaybeRef<Option>) => void;
-  onClick: (option: MaybeRef<Option>) => void;
+  onClick: (option: MaybeRef<Option>, e: MouseEvent) => void;
   onPointerDown: () => void;
 }
 
